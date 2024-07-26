@@ -1,6 +1,7 @@
 import express from "express";
 import { AppDataSource } from "./database/database";
 import 'dotenv/config';
+import { initRoutes } from "./handlers/routes/routes";
 
 const main = async () => {
     const app = express()
@@ -16,6 +17,8 @@ const main = async () => {
     }
 
     app.use(express.json())
+
+    initRoutes(app)
 
     app.listen(port, () => {
         console.log(`Server running on port ${port}`)
