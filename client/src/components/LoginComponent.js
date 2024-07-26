@@ -1,26 +1,25 @@
 import React, { useState } from 'react';
-import { Form, Input, Button, Checkbox, message } from 'antd';
-import axios from '../axiosConfig'; 
+import { Form, Input, Button, message } from 'antd';
+import { useNavigate } from 'react-router-dom';
+import { login } from '../services/authServices'
 
 export const LoginComponent = () => {
-  const [loading, setLoading] = useState(false);
 
+  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
   const onFinish = async (values) => {
-    setLoading(true);
+    setLoading(true)
     try {
-      const response = await axios.post('/auth/login', {
-        email: values.email,
-        password: values.password,
-      });
-      message.success('Connexion réussie!');
-      console.log('Token:', response.data.token);
-      // Vous pouvez maintenant stocker le token, rediriger l'utilisateur, etc.
+      await login(values)
+      message.success('Connexion réussie.')
+      navigate('/')
+
     } catch (error) {
       console.error('Erreur lors de la connexion', error);
-      message.error('Erreur de connexion, veuillez vérifier vos informations');
+      message.error(error.message || 'Identifiants incorrects.')
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   return (
     <Form
@@ -30,14 +29,14 @@ export const LoginComponent = () => {
       onFinish={onFinish}
     >
       <Form.Item
-        name="email"
-        rules={[{ required: true, message: 'Veuillez entrer votre email!' }]}
+        name="username"
+        rules={[{ required: true, message: "Veuillez saisir un nom d'utilisateur." }]}
       >
-        <Input placeholder="Email" />
+        <Input placeholder="Nom d'utilisateur" />
       </Form.Item>
       <Form.Item
         name="password"
-        rules={[{ required: true, message: 'Veuillez entrer votre mot de passe!' }]}
+        rules={[{ required: true, message: 'Veuillez saisir un mot de passe.' }]}
       >
         <Input
           type="password"
@@ -45,20 +44,11 @@ export const LoginComponent = () => {
         />
       </Form.Item>
       <Form.Item>
-        <Form.Item name="remember" valuePropName="checked" noStyle>
-          <Checkbox>Se souvenir de moi</Checkbox>
-        </Form.Item>
-        <a className="login-form-forgot" href="">
-          Mot de passe oublié
-        </a>
-      </Form.Item>
-      <Form.Item>
         <Button type="primary" htmlType="submit" className="login-form-button" loading={loading}>
           Connexion
         </Button>
-        Ou <a href="">inscrivez-vous maintenant!</a>
       </Form.Item>
     </Form>
-  );
-};
+  )
+}
 
