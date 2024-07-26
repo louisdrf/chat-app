@@ -20,7 +20,7 @@ export const loginRoute = (app: express.Express) => {
 
             // check if user exists
             const user = await AppDataSource.getRepository(User).findOne({
-                where: { email: loginUserRequest.email },
+                where: { username: loginUserRequest.username },
                 relations: ["token"]
             })
             if (!user) {
@@ -40,7 +40,7 @@ export const loginRoute = (app: express.Express) => {
             const tokenValue = sign(
                 {
                     userId: user.id,
-                    email: user.email
+                    username: user.username
                 },
                 secret, { expiresIn: '1d' }
             );

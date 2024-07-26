@@ -22,7 +22,7 @@ export const registerRoutes = (app: express.Express) => {
             const userToCreate = {
                 email : registerRequest.email,
                 password : hashedPassword,
-                pseudo : registerRequest.password
+                username : registerRequest.username
             }
 
             const userRepo = AppDataSource.getRepository('User')

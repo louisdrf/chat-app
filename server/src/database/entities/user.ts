@@ -8,7 +8,7 @@ export class User {
   id!: number
 
   @Column()
-  pseudo: string
+  username: string
 
   @Column()
   email: string
@@ -20,8 +20,8 @@ export class User {
   @JoinColumn()
   token: Token
 
-    constructor(pseudo: string, email: string, password: string, token : Token) {
-        this.pseudo = pseudo
+    constructor(username: string, email: string, password: string, token : Token) {
+        this.username = username
         this.email = email
         this.password = password
         this.token = token
