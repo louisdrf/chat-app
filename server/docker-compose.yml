@@ -1,0 +1,48 @@
+version: '3.8'
+services:
+  mysql-db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASS}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASS}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    restart: unless-stopped
+    networks:
+      - net
+
+  # phpmyadmin:
+  #   image: phpmyadmin/phpmyadmin:latest
+  #   ports:
+  #     - "8080:80"
+  #   depends_on:
+  #     - mysql-db
+  #   environment:
+  #     PMA_HOST: mysql-db
+  #   networks:
+  #     - net
+
+  api:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mysql-db
+    volumes:
+      - .:/app
+      - /app/node_modules
+    env_file:
+      - .env
+    networks:
+      - net
+
+networks:
+  net:
+
+volumes:
+  mysql-data:
+    driver: local
