@@ -36,24 +36,5 @@ message.config({
   maxCount: 3,
 })
 
-api.interceptors.response.use(
-  (response) => {
-    const method = response.config?.method
-    if (method && method !== 'get') {
-      if(method == 'post' || method == 'put' || method == 'patch') {
-        const messageText = `Les modifications ont bien été apportés.`
-        message.success(messageText)
-      }
-      if(method == 'delete') {
-        const messageText = `Les éléments ont bien été supprimés.`
-        message.success(messageText)
-      }
-    }
-    return response
-  },
-  (error) => {
-    return Promise.reject(error)
-  }
-)
 
 export default api

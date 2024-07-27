@@ -12,7 +12,8 @@ export const login = async (credentials) => {
       }
     } catch (error) {
         if (error.response) {
-            throw new Error(`Erreur ${error.response.status}: ${error.response.data.message || 'Une erreur est survenue.'}`)
+            console.log('erreur serverur : ' , error.response.data);
+            throw new Error(error.response.data.error)
         } else {
             throw new Error('Erreur réseau ou serveur.')
         }
@@ -24,11 +25,11 @@ export const register = async (credentials) => {
     try {
       const response = await api.post('/auth/register', credentials)
       if (response.data) {
-        return response
+        return response.data
       }
     } catch (error) {
         if (error.response) {
-            throw new Error(`Erreur ${error.response.status}: ${error.response.data.message || 'Une erreur est survenue.'}`)
+            throw new Error(error.response.data.error)
         } else {
             throw new Error('Erreur réseau ou serveur.')
         }
