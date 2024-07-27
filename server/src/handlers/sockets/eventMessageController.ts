@@ -34,10 +34,10 @@ export const eventMessageController = (socket: Socket) => {
             console.log('Envoyé par:', sender.username);
 
             // Émettre un message de confirmation ou de réponse
-            socket.emit('message', `Message reçu de ${sender.username}: ${content}`);
+            socket.emit('receive_message', { sender : sender.username, content : content});
             
             // Optionnel : émettre à tous les clients si nécessaire
-            socket.broadcast.emit('message', `Message de ${sender.username}: ${content}`);
+            socket.broadcast.emit('receive_message', { sender : sender.username, content : content});
         } catch (error) {
             console.error('Erreur lors de l\'enregistrement du message:', error);
         }
