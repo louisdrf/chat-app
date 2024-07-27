@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { deleteUserValidation, DeleteUserRequest } from "../../validators/rooms/delete-member-validator";
+import { deleteUserValidation } from "../../validators/rooms/delete-member-validator";
 import { generateValidationErrorMessage } from "../../validators/validation-message";
 import { AppDataSource } from "../../../database/database";
 import { User } from "../../../database/entities/user";
@@ -15,7 +15,7 @@ export const deleteRoomMember = (app: express.Express) => {
             return
         }
 
-        const deleteUserRequest: DeleteUserRequest = validation.value
+        const deleteUserRequest = validation.value
 
         try {
             const userRepository = AppDataSource.getRepository(User)

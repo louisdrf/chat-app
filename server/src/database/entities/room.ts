@@ -10,7 +10,7 @@ export class Room {
     @Column()
     name: string;
 
-    @OneToMany(() => Message, message => message.room)
+    @OneToMany(() => Message, message => message.room, { onDelete : 'CASCADE' })
     messages!: Message[];
 
     @ManyToMany(() => User, user => user.rooms)
