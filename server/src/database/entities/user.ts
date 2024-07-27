@@ -1,5 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, OneToMany, ManyToMany } from "typeorm";
 import { Token } from "./token";
+import { Message } from "./message";
+import { Room } from "./room";
 
 
 @Entity()
@@ -20,10 +22,17 @@ export class User {
   @JoinColumn()
   token: Token
 
-    constructor(username: string, email: string, password: string, token : Token) {
-        this.username = username
-        this.email = email
-        this.password = password
-        this.token = token
-    }
+  @OneToMany(() => Message, message => message.sentBy)
+    messages!: Message[];
+  
+  @ManyToMany(() => Room, room => room.users)
+  rooms!: Room[];
+
+
+  constructor(username: string, email: string, password: string, token : Token) {
+      this.username = username
+      this.email = email
+      this.password = password
+      this.token = token
+  }
 }
