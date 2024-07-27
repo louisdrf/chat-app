@@ -1,18 +1,14 @@
 import { Server as SocketIOServer } from 'socket.io';
+import { eventMessageController } from './eventMessageController';
 
 export const initSocketController = (io : SocketIOServer) => {
     io.on('connection', (socket) => {
-        console.log('Un utilisateur est connecté');
+        console.log('Un utilisateur est connecté : ', socket.id);
 
-        // Exemple d'événement 'message'
-        socket.on('message', (msg) => {
-            console.log('Message reçu:', msg);
-            io.emit('message', msg); // Émettre le message à tous les clients
-        });
+        eventMessageController(socket)
 
-        // Exemple d'événement 'disconnect'
         socket.on('disconnect', () => {
-            console.log('Un utilisateur s\'est déconnecté');
+            console.log('Un utilisateur s\'est déconnecté : ', socket.id);
         });
     });
 };

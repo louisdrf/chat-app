@@ -10,15 +10,15 @@ const main = async () => {
     const app = express()
     const port = process.env.SERVER_PORT || 3001
 
-    const server = http.createServer(app)
-
-    const io = initializeSocket(server)
-
     app.use(cors({
         origin: 'http://localhost:3002',
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
         allowedHeaders: ['Content-Type', 'Authorization']
       }));
+
+    const server = http.createServer(app)
+
+    initializeSocket(server)
 
     try {
         await AppDataSource.initialize()
@@ -33,7 +33,7 @@ const main = async () => {
 
     initRoutes(app)
 
-    app.listen(port, () => {
+    server.listen(port, () => {
         console.log(`Server running on port ${port}`)
     })
 }

@@ -1,19 +1,24 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { User } from './user';
 
 @Entity()
 export class Message {
   @PrimaryGeneratedColumn()
-  id!: number
+  id!: number;
 
   @Column()
-  content: string
+  content: string;
 
   @Column()
-  sentAt: Date
+  sentAt: Date;
 
-    constructor(content: string, sentAt : Date) {
-        this.content = content
-        this.sentAt = sentAt
-    }
+  @ManyToOne(() => User, { eager: true })
+  @JoinColumn({ name: 'sent_by' })
+  sentBy: User;  
+
+  constructor(content: string, sentAt: Date, sentBy: User) {
+    this.content = content;
+    this.sentAt = sentAt;
+    this.sentBy = sentBy;
+  }
 }
