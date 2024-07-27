@@ -22,11 +22,10 @@ export const eventMessageController = (socket: Socket) => {
             }
 
             // Créer un nouveau message
-            const message = new Message(content, new Date(), sender);
+          /*  const message = new Message(content, new Date(), sender);
 
             console.log(message);
-            
-            
+
             // Sauvegarder le message dans la base de données
             await messageRepository.save(message);
 
@@ -37,7 +36,7 @@ export const eventMessageController = (socket: Socket) => {
             socket.emit('receive_message', { sender : sender.username, content : content});
             
             // Optionnel : émettre à tous les clients si nécessaire
-            socket.broadcast.emit('receive_message', { sender : sender.username, content : content});
+            socket.broadcast.emit('receive_message', { sender : sender.username, content : content}); */
         } catch (error) {
             console.error('Erreur lors de l\'enregistrement du message:', error);
         }

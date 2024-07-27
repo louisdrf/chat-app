@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany, JoinTable, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from './user';
 import { Message } from './message';
 
@@ -20,8 +20,17 @@ export class Room {
     @Column()
     createdAt: Date;
 
-    constructor(roomName: string, createdAt : Date) {
-        this.roomName = roomName
-        this.createdAt = createdAt
+    @ManyToOne(() => User, { eager: true })
+    @JoinColumn({ name: 'created_by' })
+    createdBy!: User;
+
+    @Column({ default: false })
+    isPrivate: boolean; 
+
+    constructor(roomName: string, createdAt: Date, createdBy: User, isPrivate: boolean = false) {
+        this.roomName = roomName;
+        this.createdAt = createdAt;
+        this.createdBy = createdBy;
+        this.isPrivate = isPrivate;
     }
 }
