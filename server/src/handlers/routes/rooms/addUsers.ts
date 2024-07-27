@@ -11,7 +11,7 @@ export const addMembersToRoomRoute = (app: express.Express) => {
 
         const { roomId } = req.params
 
-        const validation = addMembersToRoomValidation.validate(req.body);
+        const validation = addMembersToRoomValidation.validate(req.body)
         if (validation.error) {
             res.status(400).send(generateValidationErrorMessage(validation.error.details))
             return

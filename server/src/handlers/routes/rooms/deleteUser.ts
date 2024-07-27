@@ -30,7 +30,7 @@ export const deleteRoomMember = (app: express.Express) => {
                 return res.status(404).json({ message: "Salon introuvable." })
             }
 
-            const user = await userRepository.findOneBy({ id: deleteUserRequest.userId })
+            const user = await userRepository.findOneBy({ username: deleteUserRequest.username })
             if (!user) {
                 return res.status(404).json({ message: "Utilisateur introuvable." })
             }

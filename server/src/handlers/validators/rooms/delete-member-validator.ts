@@ -1,9 +1,11 @@
 import Joi from "joi";
 
 export const deleteUserValidation = Joi.object<DeleteUserRequest>({
-    userId: Joi.number().required()
-}).options({ abortEarly: false });
+
+    username: Joi.string().min(1).required()
+
+}).options({ abortEarly: false })
 
 export interface DeleteUserRequest {
-    userId: number;
+    username: string
 }
