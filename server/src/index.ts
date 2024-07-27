@@ -3,11 +3,16 @@ import { AppDataSource } from "./database/database";
 import 'dotenv/config';
 import { initRoutes } from "./handlers/routes/routes";
 import cors from 'cors';
-
+import http from 'http'; 
+import { initializeSocket } from "./socket";
 
 const main = async () => {
     const app = express()
     const port = process.env.SERVER_PORT || 3001
+
+    const server = http.createServer(app)
+
+    const io = initializeSocket(server)
 
     app.use(cors({
         origin: 'http://localhost:3002',
