@@ -8,7 +8,7 @@ export class Room {
     id!: number;
 
     @Column()
-    roomName: string;
+    name: string;
 
     @OneToMany(() => Message, message => message.room)
     messages!: Message[];
@@ -27,8 +27,8 @@ export class Room {
     @Column({ default: false })
     isPrivate: boolean; 
 
-    constructor(roomName: string, createdAt: Date, createdBy: User, isPrivate: boolean = false) {
-        this.roomName = roomName;
+    constructor(name: string, createdAt: Date, createdBy: User, isPrivate: boolean = false) {
+        this.name = name;
         this.createdAt = createdAt;
         this.createdBy = createdBy;
         this.isPrivate = isPrivate;
