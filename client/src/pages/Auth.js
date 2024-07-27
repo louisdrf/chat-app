@@ -36,7 +36,7 @@ export const Auth = () => {
               <Title level={2}>Connexion</Title>
               <LoginComponent />
               <Paragraph>
-                Je n'ai pas de compte ?{' '}
+                Pas de compte ?{' '}
                 <Button type="link" onClick={toggleForm}>
                   Inscrivez-vous
                 </Button>
@@ -47,7 +47,7 @@ export const Auth = () => {
               <Title level={2}>Inscription</Title>
               <RegisterComponent />
               <Paragraph>
-                J'ai déjà un compte ?{' '}
+                Vous avez déjà un compte ?{' '}
                 <Button type="link" onClick={toggleForm}>
                   Connectez-vous
                 </Button>
