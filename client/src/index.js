@@ -1,24 +1,34 @@
+// src/index.js
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { RouterProvider, createBrowserRouter } from 'react-router-dom'
-import { Home } from './pages/Home.js'
-import { Auth } from './pages/Auth.js'
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { SocketProvider } from './contexts/socketContext'; 
+import App from './App';
+import { Home } from './pages/Home';
+import { Auth } from './pages/Auth';
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Home />
-  },
-  {
-    path: "/login",
-    element: <Auth />
+    element: <App />,
+    children: [
+      {
+        path: "",
+        element: <Home />,
+      },
+      {
+        path: "login",
+        element: <Auth />,
+      }
+    ]
   }
-])
+]);
 
-const root = ReactDOM.createRoot(document.getElementById('root'))
+const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <SocketProvider>
+      <RouterProvider router={router} />
+    </SocketProvider>
   </React.StrictMode>
-)
-
+);

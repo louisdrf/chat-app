@@ -1,10 +1,11 @@
-import App from '../App.js'
+import { InputMessageComponent } from '../components/InputMessageComponent'
 import { Navbar } from '../components/Navbar'
 export const Home = () => {
     return (
         <div>
             <Navbar/>
-            <App/>
+            <h1>Home page</h1>
+            <InputMessageComponent/>
         </div>
     )
 }
