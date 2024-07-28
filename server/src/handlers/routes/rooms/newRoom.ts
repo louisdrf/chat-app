@@ -55,6 +55,7 @@ export const newRoomRoute = (app: express.Express) => {
             })
 
             const room = await roomRepo.save(roomToCreate)
+            room.messages = []
 
             res.status(201).send({
                 message: "La conversation a bien été créée.",

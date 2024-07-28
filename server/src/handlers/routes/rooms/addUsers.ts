@@ -30,11 +30,7 @@ export const addMembersToRoomRoute = (app: express.Express) => {
             if (!room) {
                 return res.status(404).json({ message: "Le salon n'a pas été trouvé." })
             }
-
-            if(room.isPrivate) {
-                return res.status(400).json({ error: "Un autre membre ne peut pas être ajouté à une conversation privée." })
-            }
-    
+            
             const usersToAdd = await userRepository.findBy({
                 username: In(addMembersRequest.usernames)
             })
