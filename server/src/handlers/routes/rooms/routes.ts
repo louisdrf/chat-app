@@ -3,6 +3,7 @@ import { newRoomRoute } from "./newRoom"
 import { addMembersToRoomRoute } from "./addUsers"
 import { deleteRoomMember } from "./deleteUser"
 import { deleteRoomRoute } from "./deleteRoom"
+import { getRoomByIdRoute } from "./getRoomById"
 
 
 export const initRoomRoutes = (app : express.Express) => {
@@ -10,4 +11,5 @@ export const initRoomRoutes = (app : express.Express) => {
    addMembersToRoomRoute(app)
    deleteRoomMember(app)
    deleteRoomRoute(app)
+   getRoomByIdRoute(app)
 }
