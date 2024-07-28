@@ -4,7 +4,7 @@ export const roomValidation = Joi.object<CreateRoomValidationRequest>({
 
     name: Joi.string().required().min(1).max(30),
     isPrivate: Joi.boolean(),
-    createdBy: Joi.string().required().required()
+    createdBy: Joi.string().min(1).required()
 
 }).options({ abortEarly: false })
 

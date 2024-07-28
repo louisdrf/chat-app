@@ -23,7 +23,7 @@ export class User {
   token: Token
 
   @OneToMany(() => Message, message => message.sentBy)
-    messages!: Message[];
+  messages!: Message[];
   
   @ManyToMany(() => Room, room => room.users)
   rooms!: Room[];

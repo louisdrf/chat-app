@@ -20,10 +20,10 @@ export const newRoomRoute = (app: express.Express) => {
             const newRoomRequest = validation.value
 
             const creatorUsername = newRoomRequest.createdBy
-            const creator = userRepo.findOneBy({ username : creatorUsername })
+            const creator = await userRepo.findOneBy({ username : creatorUsername })
             if(!creator) {
                 res.status(400).send({ error : "Aucun utilisateur trouvé." })
-            }
+            }            
 
             const roomToCreate = {
                 name : newRoomRequest.name,
@@ -33,7 +33,7 @@ export const newRoomRoute = (app: express.Express) => {
             }
 
             
-            const room = roomRepo.save(roomToCreate)
+            const room = await roomRepo.save(roomToCreate)
 
             res.status(201).send({
                 message : "La conversation a bien été créée.",
