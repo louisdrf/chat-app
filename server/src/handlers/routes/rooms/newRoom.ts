@@ -29,9 +29,9 @@ export const newRoomRoute = (app: express.Express) => {
                 name : newRoomRequest.name,
                 createdAt: new Date(),
                 createdBy : creator,
-                isPrivate : newRoomRequest.isPrivate ?? false
+                isPrivate : newRoomRequest.isPrivate ?? false,
+                users : [creator]
             }
-
             
             const room = await roomRepo.save(roomToCreate)
 

@@ -15,7 +15,7 @@ export class Room {
 
     @ManyToMany(() => User, user => user.rooms)
     @JoinTable()
-    users!: User[];
+    users: User[];
 
     @Column()
     createdAt: Date;
@@ -27,10 +27,11 @@ export class Room {
     @Column({ default: false })
     isPrivate: boolean; 
 
-    constructor(name: string, createdAt: Date, createdBy: User, isPrivate: boolean = false) {
+    constructor(name: string, createdAt: Date, createdBy: User, isPrivate: boolean = false, users : User[]) {
         this.name = name;
         this.createdAt = createdAt;
         this.createdBy = createdBy;
         this.isPrivate = isPrivate;
+        this.users = users
     }
 }
