@@ -1,33 +1,41 @@
-import React, { useState } from 'react';
-import {
-  CalendarOutlined,
-  MailOutlined,
-} from '@ant-design/icons';
+import React, { useState, useEffect } from 'react';
+import { MailOutlined } from '@ant-design/icons';
 import { Menu } from 'antd';
-const items = [
-  {
-    key: '1',
-    icon: <MailOutlined />,
-    label: 'Navigation One',
-  },
-  {
-    key: '2',
-    icon: <CalendarOutlined />,
-    label: 'Navigation Two',
-  }
-]
-export const Navbar = () => {
-  
+import { getAllUsers } from '../services/usersServices';
+
+export const Navbar = ({ onConversationClick }) => {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        let users = await getAllUsers()
+        users = users.filter(u => u.username != localStorage.getItem("username"))
+        setUsers(users)
+      } 
+      catch (error) {
+        console.error("Erreur lors de la récupération des utilisateurs :", error);
+      }
+    }
+
+    fetchUsers()
+  }, [])
+
+  const items = [
+    ...users.map(user => ({
+      key: user.id.toString(),
+      icon: <MailOutlined />, 
+      label: user.username, 
+      onClick: () => onConversationClick(user.username)
+    })),
+  ]
+
   return (
-    <>
-      <Menu
-        style={{
-          width: 256
-        }}
-        defaultSelectedKeys={['1']}
-        theme='light'
-        items={items}
-      />
-    </>
+    <Menu
+      style={{ width: 256 }}
+      defaultSelectedKeys={['1']}
+      theme='light'
+      items={items}
+    />
   )
 }

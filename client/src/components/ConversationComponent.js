@@ -3,9 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import { useSocket } from '../contexts/socketContext'; 
 
-export const ConversationComponent = () => {
+export const ConversationComponent = ({ room }) => {
   const socket = useSocket()
-  const [messages, setMessages] = useState([])
+  const [messages, setMessages] = useState(room.messages)
 
   useEffect(() => {
     if (!socket) return

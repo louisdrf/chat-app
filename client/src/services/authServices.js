@@ -12,7 +12,7 @@ export const login = async (credentials) => {
       }
     } catch (error) {
         if (error.response) {
-            console.log('erreur serverur : ' , error.response.data);
+            console.log('erreur serveur : ' , error.response.data);
             throw new Error(error.response.data.error)
         } else {
             throw new Error('Erreur réseau ou serveur.')
@@ -29,6 +29,7 @@ export const register = async (credentials) => {
       }
     } catch (error) {
         if (error.response) {
+            console.log('erreur serveur : ' , error.response.data);
             throw new Error(error.response.data.error)
         } else {
             throw new Error('Erreur réseau ou serveur.')
