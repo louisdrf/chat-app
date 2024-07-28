@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import { AppDataSource } from "../../../database/database";
+import { Room } from "../../../database/entities/room";
 
 
 export const deleteRoomRoute = (app: express.Express) => {
@@ -7,14 +8,16 @@ export const deleteRoomRoute = (app: express.Express) => {
         const { roomId } = req.params
 
         try {
-            const roomRepo = AppDataSource.getRepository('Room')
+            const roomRepo = AppDataSource.getRepository(Room)
 
-            const room = roomRepo.findOneBy({ id : parseInt(roomId)})
+            const room = await roomRepo.findOne({ where: { id: parseInt(roomId) } })
             if(!room) {
                 return res.status(404).send({ error : 'Salon introuvable.' })
             }
 
-            await roomRepo.delete(room)
+            const deletedRoom = await roomRepo.remove(room)
+
+            res.status(200).send({ message : "Le salon a bien été supprimé.", room : deletedRoom })
         }
         catch(error) {
             console.error("Une erreur est survenue pendant la suppression du salon :", error)

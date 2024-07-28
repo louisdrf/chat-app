@@ -40,6 +40,7 @@ export const deleteRoomMember = (app: express.Express) => {
             await roomRepository.save(room)
 
             return res.status(200).json({ message: "L'utilisateur a bien été retiré du salon." })
+            
         } catch (error) {
             console.error("Une erreur est survenue pendant la suppression du membre :", error)
             return res.status(500).json({ error: "Une erreur interne est survenue. Réessayez plus tard." })
