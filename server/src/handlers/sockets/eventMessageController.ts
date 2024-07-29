@@ -59,5 +59,28 @@ export const eventMessageController = (socket: Socket) => {
             console.error('Error deleting message:', error);
           }
     })
+
+
+    socket.on('pin_message', async(messageId, roomId) => {
+        try {
+            const messageRepo = AppDataSource.getRepository(Message)
+
+            const message = await messageRepo.findOne({ where: { id: parseInt(messageId) } })
+            if(!message) return
+
+            message.isPinned = !message.isPinned
+
+            await messageRepo.save(message)
+
+            const room = await roomRepository.findOne({ where : { id : roomId }, relations: ['messages']})
+            if(!room) return
+
+            socket.in(`room_${roomId}`).emit('message_pinned', room)
+            socket.emit('message_pinned', room)
+
+          } catch (error) {
+            console.error('Error deleting message:', error);
+          }
+    })
 }
 
