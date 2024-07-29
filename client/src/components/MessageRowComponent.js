@@ -20,7 +20,7 @@ export const MessageRowComponent = ({ username, message, room }) => {
     >
       <div className="message-content">
         <div className="avatar">
-          <UserAvatar username={username} size={40} />
+          <UserAvatar username={username} size={42} />
         </div>
         
         <div className="message-details">

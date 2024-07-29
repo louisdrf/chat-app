@@ -37,6 +37,7 @@ export const Navbar = ({ onConversationClick }) => {
   return (
           <Sider width={'20vh'} theme='light'>
             <Menu
+            style={{ height: '100vh'}}
               theme='light'
               items={rooms}
             />

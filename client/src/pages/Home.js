@@ -4,6 +4,7 @@ import { ConversationComponent } from '../components/ConversationComponent';
 import { InputMessageComponent } from '../components/InputMessageComponent';
 import { Navbar } from '../components/Navbar';
 import { createPrivateRoom } from '../services/roomsServices';
+import { CurrentConversationHeader } from '../components/CurrentConversationHeader';
 
 const { Header, Content } = Layout;
 
@@ -24,7 +25,11 @@ export const Home = () => {
                 <Navbar onConversationClick={onConversationClick} />
             <Layout style={{ flex: 1 }}>
                 <Header style={{ padding: 0, backgroundColor: '#fff' }}>
-                    <h1 style={{ margin: 0, padding: '0 24px' }}>Home page</h1>
+                    {activeRoom && (
+                        <div>
+                            <CurrentConversationHeader username={activeRoom.name} />
+                        </div>
+                    )}
                 </Header>
                 <Content style={{ padding: '24px', backgroundColor: '#fff', minHeight: 'calc(100vh - 64px)' }}>
                     {activeRoom ? (
