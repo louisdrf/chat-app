@@ -33,7 +33,7 @@ export const newRoomRoute = (app: express.Express) => {
                     return
                 }
                 
-                const existingRooms = await roomRepo.find({ where : { name : targetUsername, isPrivate : true }, relations : ['users', 'messages'] })
+                const existingRooms = await roomRepo.find({ where : { isPrivate : true }, relations : ['users', 'messages'] })
                 if(existingRooms.length > 0) {
                     const existingRoom = existingRooms.find(room => 
                         room.users.some(user => user.id === creator.id) && 
