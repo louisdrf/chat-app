@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { Dropdown, Button, message as antdMessage } from 'antd';
 import { MoreOutlined, EditOutlined, DeleteOutlined, PushpinOutlined } from '@ant-design/icons';
 import { useSocket } from '../contexts/socketContext'; 
-import { pinOrUnpinMessage } from '../services/messagesServices';
 
 export const MessageRowDropdownMenu = ({ message, room }) => {
     const socket = useSocket();
@@ -15,10 +14,10 @@ export const MessageRowDropdownMenu = ({ message, room }) => {
     };
 
     const handlePin = async () => {
-        await pinOrUnpinMessage(message.id);
-        setIsPinned(!isPinned);
-        antdMessage.info(isPinned ? 'Message désépinglé.' : 'Message épinglé.');
-    };
+        socket.emit('pin_message', message.id, room.id)
+        setIsPinned(!isPinned)
+        antdMessage.info(isPinned ? 'Message désépinglé.' : 'Message épinglé.')
+    }
 
     const items = [
         {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Layout } from 'antd';
 import { ConversationComponent } from '../components/ConversationComponent';
 import { InputMessageComponent } from '../components/InputMessageComponent';
@@ -18,7 +18,9 @@ export const Home = () => {
         } catch (error) {
             console.error("Erreur lors de la création ou la récupération de la room privée :", error);
         }
-    };
+    }
+
+    useEffect(() => {}, [activeRoom])
 
     return (
         <Layout style={{ minHeight: '100vh' }}>
@@ -27,7 +29,7 @@ export const Home = () => {
                 <Header style={{ padding: 0, backgroundColor: '#fff' }}>
                     {activeRoom && (
                         <div>
-                            <CurrentConversationHeader username={activeRoom.name} />
+                            <CurrentConversationHeader room={activeRoom} />
                         </div>
                     )}
                 </Header>
