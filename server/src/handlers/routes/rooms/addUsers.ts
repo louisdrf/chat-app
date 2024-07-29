@@ -43,6 +43,8 @@ export const addMembersToRoomRoute = (app: express.Express) => {
                 room.users = [...room.users, ...filteredUsersToAdd]
                 await roomRepository.save(room)
             }
+
+            room.messages = []
     
             return res.status(200).json({ message: "Les membres ont bien été ajoutés.", room : room })
     
