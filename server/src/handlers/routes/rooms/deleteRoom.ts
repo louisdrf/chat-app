@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import { AppDataSource } from "../../../database/database";
 import { Room } from "../../../database/entities/room";
+import { Message } from "../../../database/entities/message";
 
 
 export const deleteRoomRoute = (app: express.Express) => {
@@ -9,11 +10,14 @@ export const deleteRoomRoute = (app: express.Express) => {
 
         try {
             const roomRepo = AppDataSource.getRepository(Room)
+            const messageRepo = AppDataSource.getRepository(Message)
 
             const room = await roomRepo.findOne({ where: { id: parseInt(roomId) } })
             if(!room) {
                 return res.status(404).send({ error : 'Salon introuvable.' })
             }
+
+            await messageRepo.delete({ room: { id: parseInt(roomId) } })
 
             const deletedRoom = await roomRepo.remove(room)
 

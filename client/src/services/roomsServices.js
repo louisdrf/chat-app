@@ -22,7 +22,7 @@ export const createPrivateRoom = async (username) => {
 
         // Un salon privé entre les deux utilisateurs existe déjà
         if (response.status === 200) {
-            console.log(roomResponseData)
+            console.log("a room already exists : ", roomResponseData)
             return roomResponseData
 
         } else {
