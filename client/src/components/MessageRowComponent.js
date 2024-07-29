@@ -9,6 +9,8 @@ const { Text } = Typography;
 export const MessageRowComponent = ({ username, message, room }) => {
   console.log('new message row:', message);
 
+  const isOwner = username === localStorage.getItem('username')
+
   const formattedDate = new Date(message.sentAt).toLocaleString() 
 
   return (
@@ -29,7 +31,9 @@ export const MessageRowComponent = ({ username, message, room }) => {
                 {formattedDate}
               </Text>
             </div>
-            <MessageRowDropdownMenu message={message} room={room} />
+            {isOwner && (
+              <MessageRowDropdownMenu message={message} room={room} />
+            )}
           </div>
           <div className="content">
             <Text>
