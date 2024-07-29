@@ -10,7 +10,7 @@ const { Title } = Typography;
 
 export const CurrentConversationHeader = ({ room }) => {
   const [isModalVisible, setIsModalVisible] = useState(false)
-  const [pinnedMessages, setPinnedMessages] = useState([])
+  const [pinnedMessages, setPinnedMessages] = useState(room.messages.filter(m => m.isPinned))
   const socket = useSocket()
 
   const showPinnedMessages = () => {
@@ -22,16 +22,20 @@ export const CurrentConversationHeader = ({ room }) => {
   }
 
   useEffect(() => {
-    if (room) {
-      socket.on('message_pinned', room => {
-        console.log(room);
-          setPinnedMessages(room.messages.filter(m => m.isPinned))
-      })
 
-      return () => {
-        socket.off('message_pinned');
-      };
-    }
+    setPinnedMessages(room.messages.filter(m => m.isPinned))
+    
+    const handlePinnedMessage = (roomWithPinnedMessage) => {
+      if (roomWithPinnedMessage.id === room.id) {
+        setPinnedMessages(roomWithPinnedMessage.messages.filter(m => m.isPinned));
+      }
+    };
+
+    socket.on('message_pinned', handlePinnedMessage);
+
+    return () => {
+      socket.off('message_pinned', handlePinnedMessage);
+    };
   }, [room, socket])
 
 

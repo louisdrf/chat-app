@@ -20,7 +20,6 @@ export const Home = () => {
         }
     }
 
-    useEffect(() => {}, [activeRoom])
 
     return (
         <Layout style={{ minHeight: '100vh' }}>
