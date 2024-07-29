@@ -41,5 +41,23 @@ export const eventMessageController = (socket: Socket) => {
             console.error('Erreur lors de l\'enregistrement du message:', error);
         }
     })
+
+
+    socket.on('delete_message', async(messageId, roomId) => {
+        try {
+            const messageRepo = AppDataSource.getRepository(Message)
+
+            const message = await messageRepo.findOne({ where: { id: parseInt(messageId) } })
+            if(!message) return
+
+            await messageRepo.delete({ id: parseInt(messageId) })            
+
+            socket.in(`room_${roomId}`).emit('message_deleted', messageId)
+            socket.emit('message_deleted', messageId)
+
+          } catch (error) {
+            console.error('Error deleting message:', error);
+          }
+    })
 }
 
