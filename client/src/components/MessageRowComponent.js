@@ -1,52 +1,43 @@
 import React from 'react';
+import { Card, Typography } from 'antd';
 import { UserAvatar } from './UserAvatar';
-import { Typography } from 'antd';
+import '../styles/message-row-component.scss';
+import { MessageRowDropdownMenu } from './MessageRowDropdownMenu';
 
-const { Text } = Typography
-export const MessageRowComponent = ({ username, message }) => {
+const { Text } = Typography;
 
-    console.log('new message row : ', message);
+export const MessageRowComponent = ({ username, message, room }) => {
+  console.log('new message row:', message);
 
-    const formattedDate = new Date(message.sentAt).toLocaleString()
+  const formattedDate = new Date(message.sentAt).toLocaleString() 
 
-
-    return (
-        <div style={{ 
-          display: 'flex', 
-          alignItems: 'flex-start', 
-          marginBottom: '25px',
-          padding: '10px',
-          backgroundColor: '#f9f9f9',
-          borderRadius: '8px',
-        }}>
-          <div style={{ marginRight: '15px' }}>
-            <UserAvatar username={username} size={40} />
-          </div>
-    
-          <div style={{ flex: 1 }}>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center',
-              marginBottom: '5px'
-            }}>
-              <div style={{ 
-                fontWeight: 'bold', 
-                color: '#333',
-                fontSize: '16px'
-              }}>
-                {username}
-              </div>
-              <Text type="secondary" style={{ fontSize: '12px' }}>
+  return (
+    <Card
+      className="message-row"
+      bodyStyle={{ padding: '0' }}
+    >
+      <div className="message-content">
+        <div className="avatar">
+          <UserAvatar username={username} size={40} />
+        </div>
+        
+        <div className="message-details">
+          <div className="header">
+            <div className="username-date">
+              <div className="username">{username}</div>
+              <Text className="date">
                 {formattedDate}
               </Text>
             </div>
-            <div>
-              <Text style={{ fontSize: '14px', lineHeight: '1.5' }}>
-                {message.content}
-              </Text>
-            </div>
+            <MessageRowDropdownMenu message={message} room={room} />
+          </div>
+          <div className="content">
+            <Text>
+              {message.content}
+            </Text>
           </div>
         </div>
-      );
+      </div>
+    </Card>
+  )
 }

@@ -17,10 +17,16 @@ export const ConversationComponent = ({ room }) => {
       setMessages(prevMessages => [...prevMessages, message])
     }
 
+    const handleDeleteMessage = (messageId) => {
+      setMessages(prevMessages => prevMessages.filter(message => message.id !== messageId))
+    }
+
     socket.on('receive_message', handleReceiveMessage)
+    socket.on('message_deleted', handleDeleteMessage)
 
     return () => {
       socket.off('receive_message', handleReceiveMessage)
+      socket.off('message_deleted', handleDeleteMessage)
       socket.emit('leave_room', room.id)
     }
   }, [socket, room])
@@ -38,9 +44,10 @@ export const ConversationComponent = ({ room }) => {
             key={index}
             username={msg.sentBy.username}
             message={msg}
+            room={room}
         />
         ))}
       </div>
     </div>
-  );
-};
+  )
+}

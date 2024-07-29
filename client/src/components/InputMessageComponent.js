@@ -1,46 +1,44 @@
 // src/components/InputMessageComponent.js
 import React, { useState } from 'react';
-import { Input, Button } from 'antd';
-import { SendOutlined } from '@ant-design/icons';
+import { Input } from 'antd';
 import { useSocket } from '../contexts/socketContext'; 
 
+const { TextArea } = Input
+
 export const InputMessageComponent = ({ room }) => {
-  const [message, setMessage] = useState('');
-  const socket = useSocket();
+  const [message, setMessage] = useState('')
+  const socket = useSocket()
 
   const handleSendMessage = () => {
     if (message.trim()) {
       socket.emit('send_message', { 
-        content : message, 
-        senderUsername : localStorage.getItem('username'),
-        roomId : room.id
-      })
+        content: message, 
+        senderUsername: localStorage.getItem('username'),
+        roomId: room.id
+      });
       setMessage('')
     }
   }
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
       handleSendMessage()
     }
   }
 
   return (
     <div className="inputMessage">
-      <Input
+      <TextArea
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        onKeyPress={handleKeyPress}
-        suffix={
-          <Button
-            type="text"
-            icon={<SendOutlined />}
-            onClick={handleSendMessage}
-          />
-        }
+        onKeyDown={handleKeyPress}
+        maxLength={3500} 
+        rows={4}
         placeholder="Tapez votre message ici..."
         style={{ width: '100%' }}
+        autoSize={{ minRows: 2, maxRows: 7 }} 
       />
     </div>
-  )
-}
+  );
+};
