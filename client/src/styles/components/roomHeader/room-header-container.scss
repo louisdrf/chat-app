@@ -1,0 +1,30 @@
+.headerContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+  }
+  
+  .headerContent {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .title {
+    margin: 0;
+  }
+  
+  .divider {
+    margin: 20px 0;
+  }
+  
+  .modal {
+    .ant-modal-title {
+      color: blue; // Style personnalisé pour le titre de la modal
+    }
+  
+    .ant-list-item:hover {
+      background-color: lightblue; // Couleur de fond lors du survol des éléments de la liste
+    }
+  }

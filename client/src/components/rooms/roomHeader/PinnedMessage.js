@@ -1,11 +1,11 @@
 import React from 'react';
 import { Card, Typography } from 'antd';
-import { UserAvatar } from './UserAvatar';
-import '../styles/message-row-component.scss';
+import { UserAvatar } from '../../UserAvatar';
+import '../../../styles/components/messages/message-row-component.scss';
 
 const { Text } = Typography;
 
-export const PinnedMessageComponent = ({ message }) => {
+export const PinnedMessage = ({ message }) => {
 
   const formattedDate = new Date(message.sentAt).toLocaleString() 
 

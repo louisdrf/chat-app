@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Layout } from 'antd';
-import { ConversationComponent } from '../components/ConversationComponent';
-import { InputMessageComponent } from '../components/InputMessageComponent';
+import { ConversationComponent } from '../components/rooms/ConversationComponent';
 import { Navbar } from '../components/Navbar';
 import { createPrivateRoom } from '../services/roomsServices';
-import { CurrentConversationHeader } from '../components/CurrentConversationHeader';
+import { CurrentConversationHeader } from '../components/rooms/roomHeader/CurrentConversationHeader';
+import { InputMessageComponent } from '../components/rooms/InputMessageComponent';
 
 const { Header, Content } = Layout;
 

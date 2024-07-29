@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Dropdown, Button, message as antdMessage } from 'antd';
 import { MoreOutlined, EditOutlined, DeleteOutlined, PushpinOutlined } from '@ant-design/icons';
-import { useSocket } from '../contexts/socketContext'; 
+import { useSocket } from '../../../contexts/socketContext'; 
 
 export const MessageRowDropdownMenu = ({ message, room }) => {
     const socket = useSocket();

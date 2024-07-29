@@ -1,7 +1,7 @@
 // src/components/InputMessageComponent.js
 import React, { useState } from 'react';
 import { Input } from 'antd';
-import { useSocket } from '../contexts/socketContext'; 
+import { useSocket } from '../../contexts/socketContext'; 
 
 const { TextArea } = Input
 

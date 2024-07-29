@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, Typography } from 'antd';
-import { UserAvatar } from './UserAvatar';
-import '../styles/message-row-component.scss';
+import '../../../styles/components/messages/message-row-component.scss';
+import { UserAvatar } from '../../UserAvatar';
 import { MessageRowDropdownMenu } from './MessageRowDropdownMenu';
 
 const { Text } = Typography;
