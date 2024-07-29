@@ -22,7 +22,7 @@ export const Home = () => {
             <Navbar onConversationClick={onConversationClick} />
             <h1>Home page</h1>
             {activeRoom && <ConversationComponent room={activeRoom} />}
-            <InputMessageComponent/>
+            {activeRoom && <InputMessageComponent room={activeRoom} />}
         </div>
     )
 }

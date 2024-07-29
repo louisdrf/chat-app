@@ -9,22 +9,20 @@ export const eventMessageController = (socket: Socket) => {
     const userRepository = AppDataSource.getRepository(User)
     const roomRepository = AppDataSource.getRepository(Room)
 
+    socket.on('join_room', async (roomId: number) => {
+        socket.join(`room_${roomId}`)
+    })
+
     socket.on('send_message', async (data: { content: string; senderUsername: string, roomId : number}) => {
         try {
             const { content, senderUsername, roomId } = data
 
-            console.log('content message : ', content);
-            console.log('sent by : ', senderUsername);
-            console.log('room : ', roomId);
-
-            // Récupérer l'utilisateur depuis la base de données
             const sender = await userRepository.findOneBy({ username : senderUsername})
             if (!sender) {
                 console.error(`Utilisateur ${sender} non trouvé.`)
-                return;
+                return
             }
 
-            // récupérer le salon de discussion
             const room = await roomRepository.findOneBy({ id : roomId})
             if(!room) {
                 console.error(`Room ${roomId} non trouvée.`)
@@ -34,19 +32,11 @@ export const eventMessageController = (socket: Socket) => {
             // Créer un nouveau message
             const message = new Message(content, new Date(), sender, room)
 
-            console.log(message);
+            await messageRepository.save(message)
 
-            // Sauvegarder le message dans la base de données
-            await messageRepository.save(message);
-
-            console.log('Message reçu:', content);
-            console.log('Envoyé par:', sender.username);
-
-            // Émettre un message de confirmation ou de réponse
-            socket.emit('receive_message', { sender : sender.username, content : content});
+            socket.in(`room_${roomId}`).emit('receive_message', message)
+            socket.emit('receive_message', message)
             
-            // Optionnel : émettre à tous les clients si nécessaire
-            socket.broadcast.emit('receive_message', { sender : sender.username, content : content}); 
         } catch (error) {
             console.error('Erreur lors de l\'enregistrement du message:', error);
         }

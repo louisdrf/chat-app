@@ -10,21 +10,23 @@ export const createPrivateRoom = async (username) => {
     if(!username) return
 
     const roomData = {
-        name: username, // private room will have target username as name
+        name: username, // un salon privé portera le nom de l'utilisateur
         createdBy : localStorage.getItem("username"),
         isPrivate : true
     }
     try {
         const response = await api.post('/rooms', roomData)
-        const roomResponseData = response.data.room
+        let roomResponseData = response.data.room
+
+        // Un salon privé entre les deux utilisateurs existe déjà
         if (response.status === 200) {
-            // Un salon privé entre les deux utilisateurs existe déjà
-            console.log(roomResponseData);
+            console.log(roomResponseData)
             return roomResponseData
+
         } else {
-            await addMembersToRoom(roomResponseData.id, [username])
-            console.log(roomResponseData);
-            return roomResponseData
+            const response = await addMembersToRoom(roomResponseData.id, [username])
+            console.log(response.data.room)
+            return response.data.room
         }
       }
       catch (error) {

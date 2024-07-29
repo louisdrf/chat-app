@@ -13,7 +13,7 @@ export class Message {
     @Column()
     sentAt: Date;
 
-    @ManyToOne(() => User, user => user.messages)
+    @ManyToOne(() => User, user => user.messages, { eager: true })
     @JoinColumn({ name: 'sent_by' })
     sentBy: User;
 

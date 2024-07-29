@@ -10,6 +10,8 @@ export const ConversationComponent = ({ room }) => {
   useEffect(() => {
     if (!socket) return
 
+    socket.emit('join_room', room.id)
+
     const handleReceiveMessage = (message) => {
       setMessages(prevMessages => [...prevMessages, message])
     }
@@ -19,14 +21,14 @@ export const ConversationComponent = ({ room }) => {
     return () => {
       socket.off('receive_message', handleReceiveMessage)
     }
-  }, [socket])
+  }, [socket, room.id])
 
   return (
     <div className="conversation-container">
       <div className="messages-list">
         {messages.map((msg, index) => (
           <div key={index} className="message">
-            <strong>{msg.sender}:</strong> {msg.content}
+            <strong>{msg.sentBy.username}:</strong> {msg.content}
           </div>
         ))}
       </div>

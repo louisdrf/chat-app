@@ -4,13 +4,17 @@ import { Input, Button } from 'antd';
 import { SendOutlined } from '@ant-design/icons';
 import { useSocket } from '../contexts/socketContext'; 
 
-export const InputMessageComponent = () => {
+export const InputMessageComponent = ({ room }) => {
   const [message, setMessage] = useState('');
   const socket = useSocket();
 
   const handleSendMessage = () => {
     if (message.trim()) {
-      socket.emit('send_message', { content : message, senderUsername : localStorage.getItem('username')})
+      socket.emit('send_message', { 
+        content : message, 
+        senderUsername : localStorage.getItem('username'),
+        roomId : room.id
+      })
       setMessage('')
     }
   }
