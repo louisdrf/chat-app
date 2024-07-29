@@ -13,6 +13,10 @@ export class Message {
     @Column()
     sentAt: Date;
 
+
+    @Column({ default : false })
+    isPinned!: boolean
+
     @ManyToOne(() => User, user => user.messages, { eager: true })
     @JoinColumn({ name: 'sent_by' })
     sentBy: User;
