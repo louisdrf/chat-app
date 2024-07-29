@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Menu } from 'antd';
+import { Menu, Layout } from 'antd';
 import { getAllUsers } from '../services/usersServices';
 import { UserAvatar } from './UserAvatar'
+
+const { Sider } = Layout
 
 export const Navbar = ({ onConversationClick }) => {
   const [users, setUsers] = useState([]);
@@ -33,10 +35,11 @@ export const Navbar = ({ onConversationClick }) => {
   ]
 
   return (
-    <Menu
-      style={{ width: 256 }}
-      theme='light'
-      items={rooms}
-    />
+          <Sider width={'20vh'} theme='light'>
+            <Menu
+              theme='light'
+              items={rooms}
+            />
+          </Sider>
   )
 }
