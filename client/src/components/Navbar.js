@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { MailOutlined } from '@ant-design/icons';
 import { Menu } from 'antd';
 import { getAllUsers } from '../services/usersServices';
+import { UserAvatar } from './UserAvatar'
 
 export const Navbar = ({ onConversationClick }) => {
   const [users, setUsers] = useState([]);
@@ -21,11 +21,13 @@ export const Navbar = ({ onConversationClick }) => {
     fetchUsers()
   }, [])
 
-  const items = [
+  const rooms = [
     ...users.map(user => ({
       key: user.id.toString(),
-      icon: <MailOutlined />, 
-      label: user.username, 
+      icon: <UserAvatar username={user.username} size={24} />, 
+      label: (
+        <span style={{ marginLeft: 10 }}>{user.username}</span>
+      ),
       onClick: () => onConversationClick(user.username)
     })),
   ]
@@ -33,9 +35,8 @@ export const Navbar = ({ onConversationClick }) => {
   return (
     <Menu
       style={{ width: 256 }}
-      defaultSelectedKeys={['1']}
       theme='light'
-      items={items}
+      items={rooms}
     />
   )
 }

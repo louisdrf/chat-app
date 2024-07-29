@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSocket } from '../contexts/socketContext'; 
+import { MessageRowComponent } from './MessageRowComponent'
 
 export const ConversationComponent = ({ room }) => {
   const socket = useSocket()
@@ -33,9 +34,11 @@ export const ConversationComponent = ({ room }) => {
     <div className="conversation-container">
       <div className="messages-list">
         {messages.map((msg, index) => (
-          <div key={index} className="message">
-            <strong>{msg.sentBy.username}:</strong> {msg.content}
-          </div>
+          <MessageRowComponent 
+            key={index}
+            username={msg.sentBy.username}
+            message={msg}
+        />
         ))}
       </div>
     </div>
