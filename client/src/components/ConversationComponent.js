@@ -20,8 +20,14 @@ export const ConversationComponent = ({ room }) => {
 
     return () => {
       socket.off('receive_message', handleReceiveMessage)
+      socket.emit('leave_room', room.id)
     }
-  }, [socket, room.id])
+  }, [socket, room])
+
+
+  useEffect(() => {
+    setMessages(room.messages)
+  }, [room])
 
   return (
     <div className="conversation-container">
