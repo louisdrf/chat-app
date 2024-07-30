@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, Typography, Tooltip } from 'antd';
+import { Card, Typography, Tooltip, message as antdMessage } from 'antd';
 import '../../../styles/components/messages/message-row-component.scss';
 import { UserAvatar } from '../../UserAvatar';
 import { MessageRowDropdownMenu } from './MessageRowDropdownMenu';
@@ -24,6 +24,7 @@ export const MessageRowComponent = ({ username, message, room }) => {
   const handleSave = () => {
         socket.emit('modify_message', message.id, room.id, editedContent);
         setIsEditing(false);
+        antdMessage.info('Message modifié.')
     };
 
   const handleCancel = () => {

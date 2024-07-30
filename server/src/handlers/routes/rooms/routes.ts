@@ -4,6 +4,7 @@ import { addMembersToRoomRoute } from "./addUsers"
 import { deleteRoomMember } from "./deleteUser"
 import { deleteRoomRoute } from "./deleteRoom"
 import { getRoomByIdRoute } from "./getRoomById"
+import { getUserPublicRoomsRoute } from "./getUserPublicRooms"
 
 
 export const initRoomRoutes = (app : express.Express) => {
@@ -12,4 +13,5 @@ export const initRoomRoutes = (app : express.Express) => {
    deleteRoomMember(app)
    deleteRoomRoute(app)
    getRoomByIdRoute(app)
+   getUserPublicRoomsRoute(app)
 }

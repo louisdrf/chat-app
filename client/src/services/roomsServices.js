@@ -55,3 +55,21 @@ export const addMembersToRoom = async(roomId, membersName) => {
         }
     }
 }
+
+
+
+export const getUserPublicRooms = async(username) => {
+    try {
+        const response = await api.get(`/rooms/public/${username}`)
+        return response.data.rooms
+    }
+    catch(error) {
+        console.error(error);
+        if (error.response) {
+            console.log('erreur serveur : ' , error.response.data);
+            throw new Error(error.response.data.error)
+        } else {
+            throw new Error('Erreur réseau ou serveur.')
+        }
+    }
+}

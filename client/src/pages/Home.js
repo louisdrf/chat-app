@@ -5,18 +5,28 @@ import { Navbar } from '../components/Navbar';
 import { createPrivateRoom } from '../services/roomsServices';
 import { CurrentConversationHeader } from '../components/rooms/roomHeader/CurrentConversationHeader';
 import { InputMessageComponent } from '../components/rooms/InputMessageComponent';
+import { PublicRoomsNavbar } from '../components/PublicRoomsNavbar';
 
 const { Header, Content } = Layout;
 
 export const Home = () => {
     const [activeRoom, setActiveRoom] = useState(null);
-    const [clickedRoomName, setClickedRoomName] = useState("")
+    const [activeRoomName, setActiveRoomName] = useState("")
 
-    const onConversationClick = async (username) => {
+    const onPrivateConversationClick = async (roomName) => {
         try {
-            const room = await createPrivateRoom(username);
+            const room = await createPrivateRoom(roomName);
             setActiveRoom(room)
-            setClickedRoomName(username)
+            setActiveRoomName(roomName)
+        } catch (error) {
+            console.error("Erreur lors de la création ou la récupération de la room privée :", error);
+        }
+    }
+
+    const onPublicConversationClick = async (room) => {
+        try {
+            setActiveRoom(room)
+            setActiveRoomName(room.name)
         } catch (error) {
             console.error("Erreur lors de la création ou la récupération de la room privée :", error);
         }
@@ -25,27 +35,30 @@ export const Home = () => {
 
     return (
         <Layout style={{ minHeight: '100vh' }}>
-                <Navbar onConversationClick={onConversationClick} />
-            <Layout style={{ flex: 1 }}>
-                <Header style={{ padding: 0, backgroundColor: '#fff' }}>
-                    {activeRoom && (
-                        <div>
-                            <CurrentConversationHeader name={clickedRoomName} room={activeRoom} />
-                        </div>
-                    )}
-                </Header>
-                <Content style={{ padding: '24px', backgroundColor: '#fff', minHeight: 'calc(100vh - 64px)' }}>
-                    {activeRoom ? (
-                        <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                                <ConversationComponent room={activeRoom} />
-                                <InputMessageComponent room={activeRoom} />
-                            </div>
-                        </div>
-                    ) : (
-                        <div>Veuillez sélectionner une conversation.</div>
-                    )}
-                </Content>
+                <PublicRoomsNavbar onConversationClick={onPublicConversationClick} />
+                    <Layout style={{ minHeight: '100vh' }}>
+                        <Navbar onConversationClick={onPrivateConversationClick} />
+                            <Layout style={{ flex: 1 }}>
+                                <Header style={{ padding: 0, backgroundColor: '#fff' }}>
+                                    {activeRoom && (
+                                        <div>
+                                            <CurrentConversationHeader name={activeRoomName} room={activeRoom} />
+                                        </div>
+                                    )}
+                                </Header>
+                                <Content style={{ padding: '24px', backgroundColor: '#fff', minHeight: 'calc(100vh - 64px)' }}>
+                                    {activeRoom ? (
+                                        <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                                            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                                <ConversationComponent room={activeRoom} />
+                                                <InputMessageComponent room={activeRoom} />
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div>Veuillez sélectionner une conversation.</div>
+                                    )}
+                                </Content>
+                            </Layout>
             </Layout>
         </Layout>
     );
