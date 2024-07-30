@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Layout } from 'antd';
 import { ConversationComponent } from '../components/rooms/ConversationComponent';
 import { Navbar } from '../components/Navbar';
-import { createPrivateRoom } from '../services/roomsServices';
+import { createRoom } from '../services/roomsServices';
 import { CurrentConversationHeader } from '../components/rooms/roomHeader/CurrentConversationHeader';
 import { InputMessageComponent } from '../components/rooms/InputMessageComponent';
 import { PublicRoomsNavbar } from '../components/PublicRoomsNavbar';
@@ -15,7 +15,7 @@ export const Home = () => {
 
     const onPrivateConversationClick = async (roomName) => {
         try {
-            const room = await createPrivateRoom(roomName);
+            const room = await createRoom(roomName, true)
             setActiveRoom(room)
             setActiveRoomName(roomName)
         } catch (error) {

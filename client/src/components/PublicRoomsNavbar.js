@@ -1,14 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, Layout } from 'antd';
-import { getUserPublicRooms } from '../services/roomsServices';
+import { Menu, Layout, Button } from 'antd';
+import { PlusOutlined } from "@ant-design/icons"
+import { createRoom, getUserPublicRooms } from '../services/roomsServices';
 import { UserAvatar } from './UserAvatar'
+import { NewPublicRoomFormModal } from './NewPublicRoomModal';
 
 const { Sider } = Layout
 
 export const PublicRoomsNavbar = ({ onConversationClick }) => {
   const username = localStorage.getItem("username")
   const [rooms, setRooms] = useState([])
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
+  const showModal = () => setIsModalVisible(true)
+  const handleCancel = () => setIsModalVisible(false)
+  
+  const handleCreate = async (values) => {
+    try {
+      const createdRoom = await createRoom(values.name, false);
+      setIsModalVisible(false);
+      setRooms((prevRooms) => [...prevRooms, createdRoom]);
+    } catch (error) {
+      console.error("Erreur lors de la création du salon :", error);
+    }
+  };
+  
   useEffect(() => {
     const fetchUserPublicRooms = async () => {
       try {
@@ -24,6 +40,12 @@ export const PublicRoomsNavbar = ({ onConversationClick }) => {
   }, [])
 
   const navBarRooms = [
+    {
+        key: 'create',
+        icon: <PlusOutlined />,
+        label: 'Créer un salon',
+        onClick: showModal,
+      },
     ...rooms.map(room => ({
       key: room.id.toString(),
       icon: <UserAvatar username={room.name} size={24} />, 
@@ -40,6 +62,11 @@ export const PublicRoomsNavbar = ({ onConversationClick }) => {
             style={{ height: '100vh'}}
               theme='dark'
               items={navBarRooms}
+            />
+            <NewPublicRoomFormModal
+                visible={isModalVisible}
+                onCreate={handleCreate}
+                onCancel={handleCancel}
             />
           </Sider>
   )
