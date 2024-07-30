@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, Typography } from 'antd';
+import { Card, Typography, Tooltip } from 'antd';
 import '../../../styles/components/messages/message-row-component.scss';
 import { UserAvatar } from '../../UserAvatar';
 import { MessageRowDropdownMenu } from './MessageRowDropdownMenu';
@@ -17,6 +17,7 @@ export const MessageRowComponent = ({ username, message, room }) => {
 
   const isOwner = username === localStorage.getItem('username')
   const formattedDate = new Date(message.sentAt).toLocaleString() 
+  const formattedModifyDate = new Date(message.modifiedAt).toLocaleString() 
 
   const handleEdit = () => setIsEditing(true)
 
@@ -67,6 +68,7 @@ export const MessageRowComponent = ({ username, message, room }) => {
                         onKeyDown={handleKeyDown}
                         maxLength={3500}
                         autoSize={{ minRows: 1, maxRows: 7 }} 
+                        style={{ marginBottom: '5px' }}
                       />
                       <div className="edit-instructions">
                         <Text type="secondary">
@@ -82,6 +84,13 @@ export const MessageRowComponent = ({ username, message, room }) => {
           </div>
         </div>
       </div>
+      {message.modifiedAt !== message.sentAt && (
+        <Tooltip title={`Modifié le ${formattedModifyDate}`}>
+          <Text type="secondary" style={{ position: 'absolute', bottom: '5px', right: '10px', fontSize: '12px' }}>
+            (modifié)
+          </Text>
+        </Tooltip>
+      )}
     </Card>
   )
 }
