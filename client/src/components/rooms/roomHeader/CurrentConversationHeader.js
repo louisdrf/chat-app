@@ -6,7 +6,7 @@ import { PinnedMessagesModal } from './PinnedMessagesModal';
 import { HeaderComponent } from './Header';
 
 
-export const CurrentConversationHeader = ({ room }) => {
+export const CurrentConversationHeader = ({ name, room }) => {
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [pinnedMessages, setPinnedMessages] = useState(room.messages.filter(m => m.isPinned))
   const socket = useSocket()
@@ -34,7 +34,7 @@ export const CurrentConversationHeader = ({ room }) => {
 
   return (
     <div>
-      <HeaderComponent roomName={room.name} onShowPinnedMessages={showPinnedMessages} />
+      <HeaderComponent roomName={name} onShowPinnedMessages={showPinnedMessages} />
       <Divider />
       <PinnedMessagesModal
         visible={isModalVisible}

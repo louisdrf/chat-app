@@ -10,11 +10,13 @@ const { Header, Content } = Layout;
 
 export const Home = () => {
     const [activeRoom, setActiveRoom] = useState(null);
+    const [clickedRoomName, setClickedRoomName] = useState("")
 
     const onConversationClick = async (username) => {
         try {
             const room = await createPrivateRoom(username);
-            setActiveRoom(room);
+            setActiveRoom(room)
+            setClickedRoomName(username)
         } catch (error) {
             console.error("Erreur lors de la création ou la récupération de la room privée :", error);
         }
@@ -28,7 +30,7 @@ export const Home = () => {
                 <Header style={{ padding: 0, backgroundColor: '#fff' }}>
                     {activeRoom && (
                         <div>
-                            <CurrentConversationHeader room={activeRoom} />
+                            <CurrentConversationHeader name={clickedRoomName} room={activeRoom} />
                         </div>
                     )}
                 </Header>
