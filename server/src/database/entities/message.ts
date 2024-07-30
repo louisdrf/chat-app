@@ -10,7 +10,7 @@ export class Message {
     @Column("text")
     content: string;
 
-    @Column()
+    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     sentAt: Date;
 
     @Column()
