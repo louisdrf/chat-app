@@ -29,7 +29,7 @@ export const sendFriendDemandRoute = (app: express.Express) => {
                 ]
               })
 
-            if (existingFriendshipRequest) return res.status(400).send({ error: 'Demande d\'ami déjà existante.' });
+            if (existingFriendshipRequest) return res.status(400).send({ error: 'Demande d\'ami déjà envoyée.' });
                
             const friendshipRequest = new Friendship(requester, requestee);
         
