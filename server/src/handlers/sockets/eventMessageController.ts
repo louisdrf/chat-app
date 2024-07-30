@@ -61,6 +61,27 @@ export const eventMessageController = (socket: Socket) => {
     })
 
 
+    socket.on('modify_message', async(messageId, roomId, newContent) => {
+        try {
+            const messageRepo = AppDataSource.getRepository(Message)
+
+            const message = await messageRepo.findOne({ where: { id: parseInt(messageId) } })
+            if(!message) return
+
+            message.content = newContent
+            message.modifiedAt = new Date()
+
+            await messageRepo.save(message)           
+
+            socket.in(`room_${roomId}`).emit('message_modified', message)
+            socket.emit('message_modified', message)
+
+          } catch (error) {
+            console.error('Error modifying message:', error);
+          }
+    })
+
+
     socket.on('pin_message', async(messageId, roomId) => {
         try {
             const messageRepo = AppDataSource.getRepository(Message)

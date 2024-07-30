@@ -4,7 +4,7 @@ import { Dropdown, Button, message as antdMessage } from 'antd';
 import { MoreOutlined, EditOutlined, DeleteOutlined, PushpinOutlined } from '@ant-design/icons';
 import { useSocket } from '../../../contexts/socketContext'; 
 
-export const MessageRowDropdownMenu = ({ message, room }) => {
+export const MessageRowDropdownMenu = ({ message, room, onEdit }) => {
     const socket = useSocket();
     const [isPinned, setIsPinned] = useState(message.isPinned);
 
@@ -19,11 +19,16 @@ export const MessageRowDropdownMenu = ({ message, room }) => {
         antdMessage.info(isPinned ? 'Message désépinglé.' : 'Message épinglé.')
     }
 
+    const handleModify = () => {
+        onEdit();
+    }
+
     const items = [
         {
             label: 'Modifier le message',
             key: '1',
-            icon: <EditOutlined />
+            icon: <EditOutlined />,
+            onClick: handleModify
         },
         {
             label: isPinned ? 'Désépingler le message' : 'Épingler le message',

@@ -1,17 +1,40 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, Typography } from 'antd';
 import '../../../styles/components/messages/message-row-component.scss';
 import { UserAvatar } from '../../UserAvatar';
 import { MessageRowDropdownMenu } from './MessageRowDropdownMenu';
+import { useSocket } from '../../../contexts/socketContext'; 
+import TextArea from 'antd/es/input/TextArea';
+ 
 
-const { Text } = Typography;
+const { Text, Link } = Typography;
 
 export const MessageRowComponent = ({ username, message, room }) => {
-  console.log('new message row:', message);
+  const socket = useSocket()
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedContent, setEditedContent] = useState(message.content)
 
   const isOwner = username === localStorage.getItem('username')
-
   const formattedDate = new Date(message.sentAt).toLocaleString() 
+
+  const handleEdit = () => setIsEditing(true)
+
+  const handleSave = () => {
+        socket.emit('modify_message', message.id, room.id, editedContent);
+        setIsEditing(false);
+    };
+
+  const handleCancel = () => {
+      setIsEditing(false);
+      setEditedContent(message.content);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Escape') handleCancel()
+    else if (e.key === 'Enter') handleSave()
+  }
+
 
   return (
     <Card
@@ -32,13 +55,30 @@ export const MessageRowComponent = ({ username, message, room }) => {
               </Text>
             </div>
             {isOwner && (
-              <MessageRowDropdownMenu message={message} room={room} />
+              <MessageRowDropdownMenu message={message} room={room} onEdit={handleEdit}  />
             )}
           </div>
           <div className="content">
-            <Text>
-              {message.content}
-            </Text>
+                {isEditing ? (
+                    <div className="edit-mode">
+                      <TextArea 
+                        value={editedContent} 
+                        onChange={(e) => setEditedContent(e.target.value)} 
+                        onKeyDown={handleKeyDown}
+                        maxLength={3500}
+                        autoSize={{ minRows: 1, maxRows: 7 }} 
+                      />
+                      <div className="edit-instructions">
+                        <Text type="secondary">
+                          Appuyez sur <Text keyboard>Échap</Text> pour <Link onClick={handleCancel}>annuler</Link>, <Text keyboard>Entrée</Text> pour <Link onClick={handleSave}>enregistrer</Link>.
+                        </Text>
+                      </div>
+                    </div>
+                  ) : (
+                    <Text>
+                      {message.content}
+                    </Text>
+                  )}
           </div>
         </div>
       </div>

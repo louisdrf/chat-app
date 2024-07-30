@@ -17,17 +17,12 @@ export const createPrivateRoom = async (username) => {
     try {
         const response = await api.post('/rooms', roomData)
         let roomResponseData = response.data.room
-
-        console.log("created room : ", roomResponseData);
-
         // Un salon privé entre les deux utilisateurs existe déjà
         if (response.status === 200) {
-            console.log("a room already exists : ", roomResponseData)
             return roomResponseData
 
         } else {
             const response = await addMembersToRoom(roomResponseData.id, [username])
-            console.log(response.data.room)
             return response.data.room
         }
       }

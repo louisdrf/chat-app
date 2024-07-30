@@ -13,6 +13,8 @@ export class Message {
     @Column()
     sentAt: Date;
 
+    @Column()
+    modifiedAt!: Date;
 
     @Column({ default : false })
     isPinned!: boolean
@@ -30,5 +32,6 @@ export class Message {
         this.sentAt = sentAt;
         this.sentBy = sentBy;
         this.room = room;
+        this.modifiedAt = sentAt
     }
 }

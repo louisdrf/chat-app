@@ -13,20 +13,23 @@ export const ConversationComponent = ({ room }) => {
 
     socket.emit('join_room', room.id)
 
-    const handleReceiveMessage = (message) => {
-      setMessages(prevMessages => [...prevMessages, message])
-    }
-
-    const handleDeleteMessage = (messageId) => {
-      setMessages(prevMessages => prevMessages.filter(message => message.id !== messageId))
+    const handleReceiveMessage = (message) => setMessages(prevMessages => [...prevMessages, message])
+    const handleDeleteMessage = (messageId) => setMessages(prevMessages => prevMessages.filter(message => message.id !== messageId))
+    
+    const handleModifyMessage = (modifiedMessage) => {
+      setMessages(prevMessages => prevMessages.map(msg => 
+        msg.id === modifiedMessage.id ? modifiedMessage : msg
+      ))
     }
 
     socket.on('receive_message', handleReceiveMessage)
     socket.on('message_deleted', handleDeleteMessage)
+    socket.on('message_modified', handleModifyMessage)
 
     return () => {
       socket.off('receive_message', handleReceiveMessage)
       socket.off('message_deleted', handleDeleteMessage)
+      socket.off('message_modified', handleModifyMessage)
       socket.emit('leave_room', room.id)
     }
   }, [socket, room])
