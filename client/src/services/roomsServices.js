@@ -1,10 +1,6 @@
 import api from '../axiosConfig'
 
-/**
- * create room then add target user to it
- * @param {*} username : target user for the private room
- * @returns 
- */
+
 export const createRoom = async (roomName, isPrivate) => {
 
     if(!roomName) return
@@ -20,9 +16,9 @@ export const createRoom = async (roomName, isPrivate) => {
         let roomResponseData = response.data.room
         // Un salon privé entre les deux utilisateurs existe déjà
         if (response.status === 200) {
-            console.log('nouveau salon créé : ', roomResponseData);
             return roomResponseData
-        } else {
+        } 
+        else {
             const response = await addMembersToRoom(roomResponseData.id, [roomName])
             return response.data.room
         }
