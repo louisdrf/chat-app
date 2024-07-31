@@ -10,6 +10,8 @@ import TextArea from 'antd/es/input/TextArea';
 const { Text, Link } = Typography;
 
 export const MessageRowComponent = ({ username, message, room }) => {
+  console.log('cree le : ', message.sentAt);
+  console.log('modif le : ', message.modifiedAt);
   const socket = useSocket()
 
   const [isEditing, setIsEditing] = useState(false);
@@ -36,7 +38,6 @@ export const MessageRowComponent = ({ username, message, room }) => {
     if (e.key === 'Escape') handleCancel()
     else if (e.key === 'Enter') handleSave()
   }
-
 
   return (
     <Card
@@ -85,7 +86,7 @@ export const MessageRowComponent = ({ username, message, room }) => {
           </div>
         </div>
       </div>
-      {message.modifiedAt !== message.sentAt && (
+      {formattedDate !== formattedModifyDate && (
         <Tooltip title={`Modifié le ${formattedModifyDate}`}>
           <Text type="secondary" style={{ position: 'absolute', bottom: '5px', right: '10px', fontSize: '12px' }}>
             (modifié)

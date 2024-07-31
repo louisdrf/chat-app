@@ -17,7 +17,7 @@ export class Friendship {
   @Column({ default: false })
   isAccepted!: boolean;
 
-  @Column()
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   acceptedAt!: Date
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })

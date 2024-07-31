@@ -13,7 +13,7 @@ export class Message {
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     sentAt: Date;
 
-    @Column()
+    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     modifiedAt!: Date;
 
     @Column({ default : false })
@@ -28,10 +28,13 @@ export class Message {
     room: Room;
 
     constructor(content: string, sentAt: Date, sentBy: User, room: Room) {
+        const now = new Date();
+        now.setMilliseconds(0);
+
         this.content = content;
-        this.sentAt = sentAt;
+        this.sentAt = now;
+        this.modifiedAt = now
         this.sentBy = sentBy;
         this.room = room;
-        this.modifiedAt = sentAt
     }
 }
