@@ -1,43 +1,59 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { List, message as antdMessage } from 'antd';
 import { FriendItem } from './FriendItem';
 import { useSocket } from "../../../contexts/socketContext";
+import { getUserAllFriends } from '../../../services/usersServices';
 
 export const FriendsList = ({ online }) => {
-  const socket = useSocket()
-  const [friendsList, setFriendsList] = useState([])
+  const socket = useSocket();
+  const [friendsList, setFriendsList] = useState([]);
 
   useEffect(() => {
-    const getFriendsWithOnlineStatus = () => {
-      socket.emit('getFriendsWithStatus', localStorage.getItem("username"))
-    }
-
-    const handleFriendsWithOnlineStatus = (friends) => {
-      if (online) {
-        setFriendsList(friends.filter(friend => friend.isOnline))
-      } else {
+    const fetchFriendsList = async () => {
+      try {
+        const friends = await getUserAllFriends()
         setFriendsList(friends)
+      } catch (error) {
+        antdMessage.error('Erreur lors de la récupération des amis.');
       }
     }
 
-    socket.on('friendsWithOnlineStatus', handleFriendsWithOnlineStatus);
+    fetchFriendsList();
 
-    socket.on('friendsWithOnlineStatusError', (error) => {
-      console.error('Erreur lors de la récupération des amis en ligne :', error);
-      antdMessage.error("Une erreur est survenue pendant la récupération de vos amis.");
-    })
+    const handleUserConnected = (user) => {
+      setFriendsList((prevList) =>
+        prevList.map((friend) =>
+          friend.id === user.id ? { ...friend, isOnline: true } : friend
+        )
+      )
+    }
 
-    getFriendsWithOnlineStatus()
+    const handleUserDisconnected = (user) => {
+      setFriendsList((prevList) =>
+        prevList.map((friend) =>
+          friend.id === user.id ? { ...friend, isOnline: false } : friend
+        )
+      )
+    }
+
+    socket.on('user_connected', handleUserConnected)
+    socket.on('user_disconnected', handleUserDisconnected)
 
     return () => {
-      socket.off('friendsWithOnlineStatus', handleFriendsWithOnlineStatus)
-      socket.off('friendsWithOnlineStatusError')
+      socket.off('user_connected', handleUserConnected)
+      socket.off('user_disconnected', handleUserDisconnected)
     }
-  }, [online, socket])
+  }, [socket])
+
+  // Memoize the filtered list based on the `online` prop
+  const filteredFriendsList = useMemo(() => {
+    const result = online ? friendsList.filter(friend => friend.isOnline) : friendsList
+    return result
+  }, [friendsList, online])
 
   return (
     <List
-      dataSource={friendsList}
+      dataSource={filteredFriendsList}
       renderItem={user => (
         <List.Item>
           <FriendItem user={user} />

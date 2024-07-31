@@ -1,39 +1,27 @@
 import { Server as SocketIOServer } from 'socket.io';
-import { getUserFriends } from '../services/users/getUserFriends.service';
 import { authMiddleware } from './authMiddleware';
 import { eventMessageController } from './eventMessageController';
-
-const onlineUsers = new Map<number, boolean>(); // Map to keep track of online users
-
+import { updateUserOnlineStatus } from '../services/users/updateUserOnlineStatus.service';
 
 export const initSocketController = (io: SocketIOServer) => {
   io.use(authMiddleware)
 
-  io.on('connection', (socket) => {
+  io.on('connection', async (socket) => {
 
     eventMessageController(socket)
 
-    socket.on('getFriendsWithStatus', async (username: string) => {
-        try {
+    const user = (socket as any).user
+    if (user) {
+        await updateUserOnlineStatus(user.id, true)
+        socket.broadcast.emit('user_connected', user)
+    }
 
-          const friends = await getUserFriends(username)
-          const friendsWithOnlineStatus = friends.map(friend => ({
-            ...friend,
-            isOnline: onlineUsers.has(friend.id) ?? false
-          }))
-
-          socket.emit('friendsWithOnlineStatus', friendsWithOnlineStatus)
-        } catch (error) {
-          socket.emit('friendsWithOnlineStatusError', { error: 'An error occurred while retrieving online friends.' })
+      socket.on('disconnect', async () => {
+        if (user) {
+            await updateUserOnlineStatus(user.id, false)
+            socket.broadcast.emit('user_disconnected', user)
         }
       })
-
-    socket.on('disconnect', () => {
-      const user = (socket as any).user
-      if (user) {
-        onlineUsers.delete(user.id)
-      }
-    })
   })
 
 }

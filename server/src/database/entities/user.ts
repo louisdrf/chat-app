@@ -9,6 +9,9 @@ export class User {
   @PrimaryGeneratedColumn()
   id!: number
 
+  @Column({ default : false })
+  isOnline! : boolean
+
   @Column()
   username: string
 
