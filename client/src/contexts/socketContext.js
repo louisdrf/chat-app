@@ -7,7 +7,9 @@ export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null)
 
   useEffect(() => {
-    const socketInstance = io('http://localhost:3001')
+    const socketInstance = io('http://localhost:3001', {
+      query: { token: localStorage.getItem('token') } 
+    })
     setSocket(socketInstance)
 
     // Cleanup on component unmount
