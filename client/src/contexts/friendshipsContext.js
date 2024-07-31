@@ -65,7 +65,7 @@ export const FriendshipsProvider = ({ children }) => {
       socket.off('friendship_request_sent', handleFriendshipRequestSent)
       socket.off('new_friendship_request', handleFriendshipRequestReceived)
       socket.off('friendship_request_accepted', handleFriendshipAccepted)
-    };
+    }
   }, [socket])
 
   return (

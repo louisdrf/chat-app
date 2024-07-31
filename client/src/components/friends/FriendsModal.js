@@ -3,6 +3,7 @@ import { Modal, Button, Tabs } from 'antd';
 import { FriendsList } from './friends-list/FriendsList';
 import { NewFriendRequest } from './friend-requests-list/NewFriendRequest';
 import { PendingFriendshipsList } from './friend-requests-list/PendingFriendshipsList';
+import { ReceivedFriendshipsList } from './friend-requests-list/ReceivedFriendshipsList';
 
 const { TabPane } = Tabs;
 
@@ -31,7 +32,7 @@ export const FriendsModal = ({ visible, onCancel }) => {
           <PendingFriendshipsList/>
         </TabPane>
         <TabPane tab="Demandes reçues" key="4">
-          <p>Liste des demandes d'amis en attente.</p>
+          <ReceivedFriendshipsList/>
         </TabPane>
         <TabPane tab="Ajouter un ami" key="5">
           <NewFriendRequest/>
