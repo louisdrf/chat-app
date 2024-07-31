@@ -7,7 +7,6 @@ import { getUserAllFriends } from '../../../services/usersServices';
 export const FriendsList = ({ online }) => {
   const [friendsList, setFriendsList] = useState([])
   const users = useUsers()
-
   useEffect(() => {
     const fetchFriendsList = async () => {
       try {

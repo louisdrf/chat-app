@@ -5,6 +5,7 @@ import { useUsers } from '../contexts/usersContext'; // Assurez-vous du bon chem
 
 export const UserAvatar = ({ user, size = 42 }) => {
   const users = useUsers();
+  console.log("dans user avatar : ", users);
   const isOnline = users[user.id]?.isOnline;
 
   const avatarStyle = {
