@@ -2,6 +2,7 @@ import { Server as SocketIOServer } from 'socket.io';
 import { authMiddleware } from './authMiddleware';
 import { eventMessageController } from './eventMessageController';
 import { updateUserOnlineStatus } from '../services/users/updateUserOnlineStatus.service';
+import { friendshipRequestsController } from './friendshipRequestsController';
 
 export const initSocketController = (io: SocketIOServer) => {
   io.use(authMiddleware)
@@ -9,6 +10,7 @@ export const initSocketController = (io: SocketIOServer) => {
   io.on('connection', async (socket) => {
 
     eventMessageController(socket)
+    friendshipRequestsController(socket)
 
     const user = (socket as any).user
     if (user) {

@@ -20,7 +20,7 @@ export const sendFriendDemandRoute = (app: express.Express) => {
             const requestee = await userRepo.findOne({ where: { uid: requesteeUID } })
             if(!requestee) {
                 return res.status(404).send({ error : 'Receveur de la demande introuvable.' })
-            }
+            } 
 
             const existingFriendshipRequest = await AppDataSource.getRepository(Friendship).findOne({
                 where: [
