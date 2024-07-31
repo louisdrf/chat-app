@@ -2,11 +2,11 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useSocket } from './socketContext';
 import { getOnlineUsers } from '../services/usersServices';
 
-const UserContext = createContext(null);
+const UserContext = createContext(null)
 
 export const UsersProvider = ({ children }) => {
-  const socket = useSocket();
-  const [users, setUsers] = useState({});
+  const socket = useSocket()
+  const [users, setUsers] = useState({})
 
   useEffect(() => {
     if (!socket) {
@@ -16,9 +16,9 @@ export const UsersProvider = ({ children }) => {
 
     const fetchInitialUsers = async () => {
       try {
-        const onlineUsers = await getOnlineUsers();
+        const onlineUsers = await getOnlineUsers()
         const usersObj = onlineUsers.reduce((acc, user) => {
-          acc[user.id] = { ...user, isOnline: true }
+          acc[user.id] = { ...user }
           return acc
         }, {})
         setUsers(usersObj)
@@ -27,36 +27,36 @@ export const UsersProvider = ({ children }) => {
       }
     }
 
-    fetchInitialUsers();
+    fetchInitialUsers()
 
     const handleUserConnected = (user) => {
       setUsers((prevUsers) => ({
         ...prevUsers,
         [user.id]: { ...user, isOnline: true },
-      }));
-    };
+      }))
+    }
 
     const handleUserDisconnected = (user) => {
       setUsers((prevUsers) => ({
         ...prevUsers,
         [user.id]: { ...user, isOnline: false },
-      }));
-    };
+      }))
+    }
 
-    socket.on('user_connected', handleUserConnected);
-    socket.on('user_disconnected', handleUserDisconnected);
+    socket.on('user_connected', handleUserConnected)
+    socket.on('user_disconnected', handleUserDisconnected)
 
     return () => {
-      socket.off('user_connected', handleUserConnected);
-      socket.off('user_disconnected', handleUserDisconnected);
-    };
-  }, [socket]);
+      socket.off('user_connected', handleUserConnected)
+      socket.off('user_disconnected', handleUserDisconnected)
+    }
+  }, [socket])
 
   return (
     <UserContext.Provider value={users}>
       {children}
     </UserContext.Provider>
-  );
-};
+  )
+}
 
-export const useUsers = () => useContext(UserContext);
+export const useUsers = () => useContext(UserContext)

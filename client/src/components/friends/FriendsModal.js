@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Button, Tabs } from 'antd';
 import { FriendsList } from './friends-list/FriendsList';
+import { NewFriendRequest } from './friend-requests-list/NewFriendRequest';
 
 const { TabPane } = Tabs;
 
@@ -28,8 +29,11 @@ export const FriendsModal = ({ visible, onCancel }) => {
         <TabPane tab="Demandes en attente" key="3">
           <p>Liste des demandes d'amis en attente.</p>
         </TabPane>
-        <TabPane tab="Demandes reçues" key="34">
+        <TabPane tab="Demandes reçues" key="4">
           <p>Liste des demandes d'amis en attente.</p>
+        </TabPane>
+        <TabPane tab="Ajouter un ami" key="5">
+          <NewFriendRequest/>
         </TabPane>
       </Tabs>
     </Modal>
