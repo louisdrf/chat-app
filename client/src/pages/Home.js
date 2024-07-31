@@ -34,32 +34,32 @@ export const Home = () => {
 
 
     return (
-        <Layout style={{ minHeight: '100vh' }}>
-                <PublicRoomsNavbar onConversationClick={onPublicConversationClick} />
-                    <Layout style={{ minHeight: '100vh' }}>
-                        <Navbar onConversationClick={onPrivateConversationClick} />
-                            <Layout style={{ flex: 1 }}>
-                                <Header style={{ padding: 0, backgroundColor: '#fff' }}>
-                                    {activeRoom && (
-                                        <div>
-                                            <CurrentConversationHeader name={activeRoomName} room={activeRoom} />
-                                        </div>
-                                    )}
-                                </Header>
-                                <Content style={{ padding: '24px', backgroundColor: '#fff', minHeight: 'calc(100vh - 64px)' }}>
-                                    {activeRoom ? (
-                                        <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                                            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                                                <ConversationComponent room={activeRoom} />
-                                                <InputMessageComponent room={activeRoom} />
+            <Layout style={{ minHeight: '100vh' }}>
+                    <PublicRoomsNavbar onConversationClick={onPublicConversationClick} />
+                        <Layout style={{ minHeight: '100vh' }}>
+                            <Navbar onConversationClick={onPrivateConversationClick} />
+                                <Layout style={{ flex: 1 }}>
+                                    <Header style={{ padding: 0, backgroundColor: '#fff' }}>
+                                        {activeRoom && (
+                                            <div>
+                                                <CurrentConversationHeader name={activeRoomName} room={activeRoom} />
                                             </div>
-                                        </div>
-                                    ) : (
-                                        <div>Veuillez sélectionner une conversation.</div>
-                                    )}
-                                </Content>
-                            </Layout>
+                                        )}
+                                    </Header>
+                                    <Content style={{ padding: '24px', backgroundColor: '#fff', minHeight: 'calc(100vh - 64px)' }}>
+                                        {activeRoom ? (
+                                            <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                                                <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                                    <ConversationComponent room={activeRoom} />
+                                                    <InputMessageComponent room={activeRoom} />
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div>Veuillez sélectionner une conversation.</div>
+                                        )}
+                                    </Content>
+                                </Layout>
+                </Layout>
             </Layout>
-        </Layout>
-    );
-};
+    )
+}

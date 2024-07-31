@@ -45,7 +45,7 @@ export const ConversationComponent = ({ room }) => {
         {messages.map((msg, index) => (
           <MessageRowComponent 
             key={index}
-            username={msg.sentBy.username}
+            user={msg.sentBy}
             message={msg}
             room={room}
         />

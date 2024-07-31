@@ -9,13 +9,13 @@ import TextArea from 'antd/es/input/TextArea';
 
 const { Text, Link } = Typography;
 
-export const MessageRowComponent = ({ username, message, room }) => {
+export const MessageRowComponent = ({ user, message, room }) => {
   const socket = useSocket()
 
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(message.content)
 
-  const isOwner = username === localStorage.getItem('username')
+  const isOwner = user.username === localStorage.getItem('username')
   const formattedDate = new Date(message.sentAt).toLocaleString() 
   const formattedModifyDate = new Date(message.modifiedAt).toLocaleString() 
 
@@ -44,13 +44,13 @@ export const MessageRowComponent = ({ username, message, room }) => {
     >
       <div className="message-content">
         <div className="avatar">
-          <UserAvatar username={username} size={42} />
+          <UserAvatar user={user} size={42} />
         </div>
         
         <div className="message-details">
           <div className="header">
             <div className="username-date">
-              <div className="username">{username}</div>
+              <div className="username">{user.username}</div>
               <Text className="date">
                 {formattedDate}
               </Text>

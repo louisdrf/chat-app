@@ -6,6 +6,7 @@ import { SocketProvider } from './contexts/socketContext';
 import App from './App';
 import { Home } from './pages/Home';
 import { Auth } from './pages/Auth';
+import { UsersProvider } from './contexts/usersContext';
 
 const router = createBrowserRouter([
   {
@@ -28,7 +29,9 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <SocketProvider>
-      <RouterProvider router={router} />
+      <UsersProvider>
+        <RouterProvider router={router} />
+      </UsersProvider>
     </SocketProvider>
   </React.StrictMode>
-);
+)

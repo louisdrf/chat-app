@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import io from 'socket.io-client';
 
-const SocketContext = createContext()
+const SocketContext = createContext(null)
 
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null)
@@ -10,10 +10,16 @@ export const SocketProvider = ({ children }) => {
     const socketInstance = io('http://localhost:3001', {
       query: { token: localStorage.getItem('token') } 
     })
-    setSocket(socketInstance)
+    
+    socketInstance.on('connect', () => {
+      console.log('Socket connected:', socketInstance.id);
+      setSocket(socketInstance);
+    })
 
-    // Cleanup on component unmount
-    return () => socketInstance.disconnect()
+    return () => {
+      socketInstance.disconnect()
+      console.log('socket instance context disconnected');
+    }
   }, [])
 
   return (

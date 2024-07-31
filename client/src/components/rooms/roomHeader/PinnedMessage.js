@@ -16,7 +16,7 @@ export const PinnedMessage = ({ message }) => {
     >
       <div className="message-content">
         <div className="avatar">
-          <UserAvatar username={message.sentBy.username} size={26} />
+          <UserAvatar user={message.sentBy} size={26} />
         </div>
         
         <div className="message-details">

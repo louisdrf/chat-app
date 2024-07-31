@@ -11,7 +11,7 @@ export const RoomMember = ({ member }) => {
       bodyStyle={{ padding: '0' }}
     >
       <Meta
-        avatar={<UserAvatar username={member.username} size={32} />}
+        avatar={<UserAvatar user={member} size={32} />}
         title={member.username}
         style={{ margin: '0' }}
       />

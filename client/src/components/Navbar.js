@@ -38,7 +38,7 @@ export const Navbar = ({ onConversationClick }) => {
     },
     ...users.map(user => ({
       key: user.id.toString(),
-      icon: <UserAvatar username={user.username} size={24} />, 
+      icon: <UserAvatar user={user} size={24} />, 
       label: (
         <span style={{ marginLeft: 10 }}>{user.username}</span>
       ),

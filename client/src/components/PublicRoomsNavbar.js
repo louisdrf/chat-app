@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Menu, Layout, Button } from 'antd';
 import { PlusOutlined } from "@ant-design/icons"
 import { createRoom, getUserPublicRooms } from '../services/roomsServices';
-import { UserAvatar } from './UserAvatar'
 import { NewPublicRoomFormModal } from './NewPublicRoomModal';
+import { RoomAvatar } from './RoomAvatar';
 
 const { Sider } = Layout
 
@@ -48,7 +48,7 @@ export const PublicRoomsNavbar = ({ onConversationClick }) => {
       },
     ...rooms.map(room => ({
       key: room.id.toString(),
-      icon: <UserAvatar username={room.name} size={24} />, 
+      icon: <RoomAvatar roomName={room.name} size={24} />, 
       label: (
         <span style={{ marginLeft: 10 }}>{room.name}</span>
       ),

@@ -3,13 +3,14 @@ import { Typography } from 'antd';
 import { UserAvatar } from '../../UserAvatar';
 import '../../../styles/components/roomHeader/room-header-container.scss'
 import { HeaderDropdownMenu } from './HeaderDropdownMenu';
+import { RoomAvatar } from '../../RoomAvatar';
 
 const { Title } = Typography;
 
 export const HeaderComponent = ({ room, roomName, onShowPinnedMessages, onShowMembersList }) => (
     <div className="headerContainer">
       <div className="headerContent">
-        <UserAvatar username={roomName} size={32} />
+        <RoomAvatar roomName={roomName} size={32} />
         <Title level={4} className="title">{roomName}</Title>
       </div>
       <HeaderDropdownMenu 
