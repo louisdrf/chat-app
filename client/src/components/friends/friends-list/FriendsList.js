@@ -1,29 +1,48 @@
-import React, { useState } from 'react';
-import { List } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { List, message as antdMessage } from 'antd';
 import { FriendItem } from './FriendItem';
-import { getUserAllFriends } from '../../../services/usersServices';
+import { useSocket } from "../../../contexts/socketContext";
 
 export const FriendsList = ({ online }) => {
-
+  const socket = useSocket()
   const [friendsList, setFriendsList] = useState([])
 
-  const getAllFriends = async() => {
-    const friends = await getUserAllFriends()
-    setFriendsList(friends)
-  }
-  const getOnlineFriends = () => setFriendsList([])
-  
-  online ? getOnlineFriends() : getAllFriends()
+  useEffect(() => {
+    const getFriendsWithOnlineStatus = () => {
+      socket.emit('getFriendsWithStatus', localStorage.getItem("username"))
+    }
+
+    const handleFriendsWithOnlineStatus = (friends) => {
+      if (online) {
+        setFriendsList(friends.filter(friend => friend.isOnline))
+      } else {
+        setFriendsList(friends)
+      }
+    }
+
+    socket.on('friendsWithOnlineStatus', handleFriendsWithOnlineStatus);
+
+    socket.on('friendsWithOnlineStatusError', (error) => {
+      console.error('Erreur lors de la récupération des amis en ligne :', error);
+      antdMessage.error("Une erreur est survenue pendant la récupération de vos amis.");
+    })
+
+    getFriendsWithOnlineStatus()
+
+    return () => {
+      socket.off('friendsWithOnlineStatus', handleFriendsWithOnlineStatus)
+      socket.off('friendsWithOnlineStatusError')
+    }
+  }, [online, socket])
 
   return (
-      <List
-        dataSource={friendsList}
-        renderItem={user => (
-          <List.Item>
-            <FriendItem member={user} />
-          </List.Item>
-        )}
-      />
+    <List
+      dataSource={friendsList}
+      renderItem={user => (
+        <List.Item>
+          <FriendItem user={user} />
+        </List.Item>
+      )}
+    />
   )
-  
 }

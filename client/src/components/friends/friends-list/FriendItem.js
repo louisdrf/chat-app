@@ -5,6 +5,7 @@ import { UserAvatar } from '../../UserAvatar'; // Assurez-vous que ce chemin est
 const { Meta } = Card;
 
 export const FriendItem = ({ user }) => {
+  console.log(user);
   return (
     <Card
       style={{ margin: '10px 0', padding: '10px', border: 'none' }}

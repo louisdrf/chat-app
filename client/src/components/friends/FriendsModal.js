@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Modal, Button, Tabs } from 'antd';
+import { FriendsList } from './friends-list/FriendsList';
 
 const { TabPane } = Tabs;
 
@@ -19,10 +20,10 @@ export const FriendsModal = ({ visible, onCancel }) => {
     >
       <Tabs defaultActiveKey="1">
         <TabPane tab="En ligne" key="1">
-          <p>Liste des amis en ligne.</p>
+          <FriendsList online={true} />
         </TabPane>
         <TabPane tab="Tous mes amis" key="2">
-          <p>Liste de tous les amis.</p>
+          <FriendsList online={false} />
         </TabPane>
         <TabPane tab="Demandes en attente" key="3">
           <p>Liste des demandes d'amis en attente.</p>
