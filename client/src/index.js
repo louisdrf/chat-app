@@ -7,6 +7,7 @@ import App from './App';
 import { Home } from './pages/Home';
 import { Auth } from './pages/Auth';
 import { UsersProvider } from './contexts/usersContext';
+import { FriendshipsProvider } from './contexts/friendshipsContext';
 
 const router = createBrowserRouter([
   {
@@ -30,7 +31,9 @@ root.render(
   <React.StrictMode>
     <SocketProvider>
       <UsersProvider>
-        <RouterProvider router={router} />
+        <FriendshipsProvider>
+          <RouterProvider router={router} />
+        </FriendshipsProvider>
       </UsersProvider>
     </SocketProvider>
   </React.StrictMode>

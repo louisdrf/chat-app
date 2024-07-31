@@ -13,7 +13,7 @@ export const FriendsList = ({ online }) => {
         const friends = await getUserAllFriends()
         setFriendsList(friends)
       } catch (error) {
-        antdMessage.error('Erreur lors de la récupération des amis.');
+        antdMessage.error('Erreur lors de la récupération des amis.')
       }
     }
 

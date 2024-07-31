@@ -10,8 +10,8 @@ export const UsersProvider = ({ children }) => {
 
   useEffect(() => {
     if (!socket) {
-      console.error('Socket instance is not available');
-      return;
+      console.error('Socket instance is not available')
+      return
     }
 
     const fetchInitialUsers = async () => {
