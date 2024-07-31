@@ -4,7 +4,7 @@ import { User } from "../../../database/entities/user";
 
 
 export const getUserFriendsRoute = (app: express.Express) => {
-    app.get('/users/friends/:username', async(req: Request, res: Response) => {
+    app.get('/users/:username/friends', async(req: Request, res: Response) => {
 
         const { username } = req.params
 

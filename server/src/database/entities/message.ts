@@ -23,7 +23,7 @@ export class Message {
     @JoinColumn({ name: 'sent_by' })
     sentBy: User;
 
-    @ManyToOne(() => Room, room => room.messages)
+    @ManyToOne(() => Room, room => room.messages, { onDelete: 'CASCADE'})
     @JoinColumn({ name: 'room_id' })
     room: Room;
 

@@ -1,6 +1,5 @@
 import express, { Request, Response } from "express";
 import { AppDataSource } from "../../../database/database";
-import { User } from "../../../database/entities/user";
 import { Friendship } from "../../../database/entities/friendship";
 
 

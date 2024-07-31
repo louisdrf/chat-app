@@ -3,7 +3,6 @@ import { Token } from "./token";
 import { Message } from "./message";
 import { Room } from "./room";
 import { Friendship } from "./friendship";
-import { v4 as uuidv4 } from 'uuid';
 
 @Entity()
 export class User {
@@ -19,37 +18,32 @@ export class User {
   @Column()
   password: string
 
-  @Column({ unique: true })
+  @Column()
   uid: string
 
-  @OneToOne(() => Token, token => token.user)
+  @OneToOne(() => Token, token => token.user, { onDelete: 'CASCADE' })
   @JoinColumn()
   token: Token
 
-  @OneToMany(() => Message, message => message.sentBy)
+  @OneToMany(() => Message, message => message.sentBy, { onDelete: 'CASCADE' })
   messages!: Message[]
   
   @ManyToMany(() => Room, room => room.users)
   rooms!: Room[]
 
-  @OneToMany(() => Friendship, friendship => friendship.requester)
+  @OneToMany(() => Friendship, friendship => friendship.requester, { onDelete: 'CASCADE' })
   sentFriendRequests!: Friendship[]
 
-  @OneToMany(() => Friendship, friendship => friendship.requestee)
+  @OneToMany(() => Friendship, friendship => friendship.requestee, { onDelete: 'CASCADE' })
   receivedFriendRequests!: Friendship[]
 
 
-  constructor(username: string, email: string, password: string, token : Token) {
+  constructor(username: string, email: string, password: string, token : Token, uid: string) {
       this.username = username
       this.email = email
       this.password = password
       this.token = token
-      this.sentFriendRequests = []
-      this.receivedFriendRequests = []
-      this.uid = this.generateUID()
+      this.uid = uid
   }
 
-  private generateUID(): string {
-    return uuidv4().slice(0, 8) // 8 caractères
-  }
 }

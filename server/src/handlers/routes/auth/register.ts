@@ -3,6 +3,7 @@ import { AppDataSource } from "../../../database/database"
 import { registerValidation } from "../../validators/auth/register-validator"
 import { generateValidationErrorMessage } from "../../validators/validation-message"
 import { hash } from "bcrypt"
+import { v4 as uuidv4 } from 'uuid';
 
 
 export const registerRoutes = (app: express.Express) => {
@@ -22,7 +23,8 @@ export const registerRoutes = (app: express.Express) => {
             const userToCreate = {
                 email : registerRequest.email,
                 password : hashedPassword,
-                username : registerRequest.username
+                username : registerRequest.username,
+                uid : uuidv4().slice(0, 6)
             }
 
             const userRepo = AppDataSource.getRepository('User')
