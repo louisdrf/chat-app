@@ -7,12 +7,17 @@ export const friendshipRequestsController = (socket: Socket) => {
     const friendshipRepo = AppDataSource.getRepository(Friendship);
     const userRepo = AppDataSource.getRepository(User);
 
-    socket.on('send_friendship_request', async (requestee_uid: string, requester_uid: string) => {
+    socket.on('send_friendship_request', async (requestee_username: string, requester_username: string) => {
         try {
-            const requester = await userRepo.findOne({ where: { uid: requester_uid } })
+
+            if(requestee_username === requester_username) {
+                return socket.emit('friendship_request_error', { error: "Il s'agirait de se faire des amis..." })
+            }
+
+            const requester = await userRepo.findOne({ where: { username: requester_username } })
             if (!requester)  return socket.emit('friendship_request_error', { error: 'Envoyeur de la demande introuvable.' });
 
-            const requestee = await userRepo.findOne({ where: { uid: requestee_uid } });
+            const requestee = await userRepo.findOne({ where: { username: requestee_username } });
             if (!requestee) return socket.emit('friendship_request_error', { error: 'Receveur de la demande introuvable.' });
 
             const existingFriendshipRequest = await friendshipRepo.findOne({
@@ -22,7 +27,10 @@ export const friendshipRequestsController = (socket: Socket) => {
                 ]
             })
 
-            if (existingFriendshipRequest) return socket.emit('friendship_request_error', { error: 'Demande d\'ami déjà envoyée.' });
+            if (existingFriendshipRequest) {
+                 const message = existingFriendshipRequest.isAccepted ? `${requestee_username} et vous êtes déjà amis.` : "Demande d'ami déjà envoyée."
+                return socket.emit('friendship_request_error', { error: message })
+            }
 
             const friendshipRequest = new Friendship(requester, requestee)
 
@@ -32,7 +40,7 @@ export const friendshipRequestsController = (socket: Socket) => {
             socket.emit('friendship_request_sent', { message: 'Demande envoyée.', demand: friendshipRequest });
 
             // Optionally, notify the requestee
-            socket.to(requestee_uid).emit('new_friendship_request', { requester })
+            socket.to(requestee_username).emit('new_friendship_request', { requester })
 
         } catch (error) {
             console.error("Une erreur est survenue pendant l'envoi de la demande d'ami :", error);
@@ -45,7 +53,7 @@ export const friendshipRequestsController = (socket: Socket) => {
             const friendship = await friendshipRepo.findOne({ where: { id: friendshipId } })
 
             if (!friendship) return socket.emit('friendship_acceptance_error', { error: 'Demande d\'ami non trouvée.' })
-                
+
             friendship.isAccepted = true
             friendship.acceptedAt = new Date()
             await friendshipRepo.save(friendship)
