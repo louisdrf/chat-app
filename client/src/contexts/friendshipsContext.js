@@ -37,52 +37,47 @@ export const FriendshipsProvider = ({ children }) => {
     fetchInitialPendingRequests();
     fetchInitialReceivedRequests();
 
-    const handleFriendshipRequestSent = (data) => {
-      setPendingFriendships((prev) => [...prev, data.friendship])
-      notification.success({
-        message: "Demande envoyée.",
-        description: `Votre demande a bien été envoyée à ${data.friendship.requestee.username}.`,
-        duration: 5,
-      })
+    const sendNewFriendRequest = (friendship) => { // pour celui qui envoie la demande d'ami
+      setPendingFriendships((prev) => [...prev, friendship])
     }
 
-    const handleFriendshipRequestReceived = (data) => {
-      setReceivedFriendships((prev) => [...prev, data.friendship])
+    const receiveNewFriendRequest = (receivedRequest) => { // pour celui qui reçoit la demande d'ami
+      setReceivedFriendships((prev) => [...prev, receivedRequest])
       notification.info({
         message: "Nouvelle demande d'ami",
-        description: `${data.friendship.requester.username} vous a envoyé une demande d'ami.`,
-        duration: 5,
+        description: `${receivedRequest.requester.username} vous a envoyé une demande d'ami.`,
+        duration: 3,
       })
     }
 
-    const handleFriendshipAcceptedRequester = (data) => {
-      setPendingFriendships((prev) => prev.filter((request) => request.id !== data.friendship.id))
+    const requestAccepted = (acceptedRequest) => { // demande acceptée pour celui qui envoie la demande
+      setPendingFriendships((prev) => prev.filter((request) => request.id !== acceptedRequest.id))
       notification.success({
         message: "Demande d'ami acceptée",
-        description: `${data.friendship.requestee.username} a accepté votre demande d'ami.`,
-        duration: 5,
+        description: `${acceptedRequest.requestee.username} a accepté votre demande d'ami.`,
+        duration: 3,
       })
     }
 
-    const handleFriendshipAcceptedRequestee = (data) => {
-      setReceivedFriendships((prev) => prev.filter((request) => request.id !== data.friendship.id))
+    const acceptRequestConfirmation = (new_friendship) => { // demande acceptée par celui qui reçoit la demande
+      setReceivedFriendships((prev) => prev.filter((request) => request.id !== new_friendship.id))
       notification.success({
         message: "Demande d'ami acceptée",
-        description: `${data.friendship.requester.username} et toi êtes désormais amis.`,
-        duration: 5,
+        description: `${friendship.requester.username} et toi êtes désormais amis.`,
+        duration: 3,
       })
     }
 
-    socket.on('friendship_request_sent', handleFriendshipRequestSent)
-    socket.on('new_friendship_request', handleFriendshipRequestReceived)
-    socket.on('friendship_request_accepted_requester', handleFriendshipAcceptedRequester)
-    socket.on('friendship_request_accepted_requestee', handleFriendshipAcceptedRequestee)
+    socket.on('new_pending_request', sendNewFriendRequest)
+    socket.on('new_friendship_request', receiveNewFriendRequest)
+    socket.on('requester_request_accepted', requestAccepted)
+    socket.on('requestee_accepted_the_request', acceptRequestConfirmation)
 
     return () => {
-      socket.off('friendship_request_sent', handleFriendshipRequestSent)
-      socket.off('new_friendship_request', handleFriendshipRequestReceived)
-      socket.off('friendship_request_accepted_requester', handleFriendshipAcceptedRequester)
-      socket.off('friendship_request_accepted_requestee', handleFriendshipAcceptedRequestee)
+      socket.off('new_pending_request', sendNewFriendRequest)
+      socket.off('new_friendship_request', receiveNewFriendRequest)
+      socket.off('requester_request_accepted', requestAccepted)
+      socket.off('requestee_accepted_the_request', acceptRequestConfirmation)
     }
   }, [socket])
 

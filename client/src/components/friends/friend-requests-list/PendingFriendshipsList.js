@@ -17,7 +17,19 @@ export const PendingFriendshipsList = () => {
       dataSource={pendingRequestsList}
       renderItem={friendship => (
         <List.Item>
-          <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+          <div 
+            style={{
+              border: '1px solid #e8e8e8',
+              borderRadius: '8px',
+              marginBottom: '10px',
+              padding: '10px',
+              backgroundColor: '#fafafa',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              width: '100%'
+            }}
+          >
             <div>
               <Text style={{ fontSize: '16px', fontWeight: '500' }}>
                 {friendship.requestee.username}

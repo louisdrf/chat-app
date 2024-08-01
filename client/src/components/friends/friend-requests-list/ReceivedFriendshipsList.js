@@ -11,12 +11,12 @@ export const ReceivedFriendshipsList = () => {
   const {socket} = useSocket();
 
   const handleAcceptRequest = (friendshipId) => {
-    socket.emit('accept_friendship_request', friendshipId);
-  };
+    socket.emit('accept_friendship_request', friendshipId)
+  }
 
   const receivedRequestsList = useMemo(() => {
-    return receivedFriendships || [];
-  }, [receivedFriendships]);
+    return receivedFriendships || []
+  }, [receivedFriendships])
 
   return (
     <List

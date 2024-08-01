@@ -31,14 +31,14 @@ export const friendshipRequestsController = (socket: Socket) => {
         return socket.emit('friendship_request_error', { error: message });
       }
 
-      const friendshipRequest = new Friendship(requester, requestee);
-      await friendshipRepo.save(friendshipRequest);
+      const friendshipRequest = new Friendship(requester, requestee)
+      await friendshipRepo.save(friendshipRequest)
 
-      // Notify the requester
-      socket.emit('friendship_request_sent', { message: "Votre demande a été envoyée.", friendship: friendshipRequest });
+      // envoyer la requête 'en attente' à l'émetteur
+      socket.emit('new_pending_request', friendshipRequest)
 
-      // Notify the requestee
-      socket.to(requestee.socketId).emit('new_friendship_request', { friendship: friendshipRequest });
+      // envoyer la nouvelle demande d'ami à l'utilisateur concerné
+      if(requestee.socketId) socket.to(requestee.socketId).emit('new_friendship_request', friendshipRequest)
 
     } catch (error) {
       console.error("Une erreur est survenue pendant l'envoi de la demande d'ami :", error);
@@ -58,19 +58,18 @@ export const friendshipRequestsController = (socket: Socket) => {
       friendship.acceptedAt = new Date()
       await friendshipRepo.save(friendship)
 
-      // Notify the requester
-      if (friendship.requester.socketId) {
-        socket.to(friendship.requester.socketId).emit('friendship_request_accepted_requester', { friendship });
+      
+      // envoi à celui qui avait envoyé la demande
+      if (friendship.requester.socketId) {      
+        socket.to(friendship.requester.socketId).emit('requester_request_accepted', friendship) // lui indiquer que la personne a bien accepté sa demande
+        socket.to(friendship.requester.socketId).emit('new_friend', friendship.requestee) // lui indiquer qu'il a un nouvel ami => friendship.requestee
       }
 
-      // Notify the requestee
-      socket.emit('friendship_request_accepted_requestee', { friendship })
-
-      socket.emit('new_friend', friendship.requester) 
-
-      console.log("nouvel ami pour : ", friendship.requester.socketId);
-      
-      socket.to(friendship.requester.socketId).emit('new_friend', friendship.requestee)
+      // envoi à celui qui a accepté la demande
+      if (friendship.requestee.socketId) {
+        socket.to(friendship.requestee.socketId).emit('requestee_accepted_the_request', friendship) // lui indiquer que lui et le demandeur sont maintenant amis
+        socket.to(friendship.requestee.socketId).emit('new_friend', friendship.requester) // lui indiquer qu'il a un nouvel ami => friendship.requester
+      }
 
     } catch (error) {
       console.error("Une erreur est survenue pendant l'acceptation de la demande d'ami :", error);
