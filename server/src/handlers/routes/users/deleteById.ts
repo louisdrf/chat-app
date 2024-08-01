@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import { AppDataSource } from "../../../database/database";
 import { User } from "../../../database/entities/user";
 import { Room } from "../../../database/entities/room";
+import { Friendship } from "../../../database/entities/friendship";
 
 
 export const deleteUserByIdRoute = (app: express.Express) => {
@@ -11,6 +12,7 @@ export const deleteUserByIdRoute = (app: express.Express) => {
         try {
             const userRepo = AppDataSource.getRepository(User)
             const roomRepo = AppDataSource.getRepository(Room)
+            const friendshipRepo = AppDataSource.getRepository(Friendship)
 
             const user = await userRepo.findOne({ 
                 where: { id: parseInt(userId) }, 
@@ -24,6 +26,10 @@ export const deleteUserByIdRoute = (app: express.Express) => {
                 room.users = room.users.filter(u => u.id !== user.id)
                 await roomRepo.save(room)
             }    
+
+            // suuprimer les amitiés
+            await friendshipRepo.delete({ requester: user })
+            await friendshipRepo.delete({ requestee: user })
 
             // Supprimer les rooms créees par l'utilisateur
             await roomRepo.delete({ createdBy: user })
