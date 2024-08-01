@@ -5,6 +5,7 @@ import { getUserFriendsRoute } from "./getUserFriends"
 import { initGetOnlineUsersRoute } from "./getOnlineUsers"
 import { getUserPendingFriendshipsRoute } from "./getUserPendingFriendships"
 import { getUserReceivedFriendshipsRoute } from "./getUserReceivedFriendships"
+import { getFriendshipRoute } from "./getFriendship"
 
 export const initUsersRoutes = (app : express.Express) => {
     initGetAllUsersRoute(app)
@@ -13,4 +14,5 @@ export const initUsersRoutes = (app : express.Express) => {
     initGetOnlineUsersRoute(app)
     getUserPendingFriendshipsRoute(app)
     getUserReceivedFriendshipsRoute(app)
+    getFriendshipRoute(app)
 }

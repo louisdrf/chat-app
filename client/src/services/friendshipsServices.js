@@ -32,3 +32,20 @@ export const getUserReceivedFriendships = async() => {
         }
     }
 }
+
+
+export const getFriendship = async(username) => {
+    try {
+        const me = localStorage.getItem('username')
+        const response = await api.get(`/users/${username}/friendships/${me}`)
+        return response.data.friendship
+      }
+      catch (error) {
+        if (error.response) {
+            console.log('erreur serveur : ' , error.response.data)
+            throw new Error(error.response.data.error)
+        } else {
+            throw new Error('Erreur réseau ou serveur.')
+        }
+    }
+}

@@ -76,4 +76,27 @@ export const friendshipRequestsController = (socket: Socket) => {
       socket.emit('friendship_acceptance_error', { error: "Une erreur interne est survenue. Réessayez plus tard." });
     }
   })
+
+
+  socket.on('delete_friendship', async (friendshipId: number) => {
+    try {
+      const friendship = await friendshipRepo.findOne({ where: { id: friendshipId }, relations: ["requester", "requestee"] });
+
+      if (!friendship) {
+        return socket.emit('friendship_deletion_error', { error: 'Demande d\'ami non trouvée.' });
+      }
+
+      const deletedFriendship = await friendshipRepo.remove(friendship)
+      
+      // envoi à celui qui avait envoyé la demande
+      if (friendship.requester.socketId) {      
+        socket.emit('friendship_deletion_success', deletedFriendship) // lui indiquer que la suppression a bien été effectuée
+        socket.emit('delete_friend', friendship.requestee) // lui indiquer que son ami a été supprimé
+      }
+
+    } catch (error) {
+      console.error("Une erreur est survenue pendant la suppression de la demande d'ami :", error);
+      socket.emit('friendship_acceptance_error', { error: "Une erreur interne est survenue. Réessayez plus tard." });
+    }
+  })
 }
