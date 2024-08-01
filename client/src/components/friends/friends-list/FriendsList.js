@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { List, message as antdMessage } from 'antd';
 import { FriendItem } from './FriendItem';
-import { useUsers } from '../../../contexts/usersContext'; // Assurez-vous d'importer correctement
+import { useUsers } from '../../../contexts/usersContext';
 import { getUserAllFriends } from '../../../services/usersServices';
 
 export const FriendsList = ({ online }) => {
   const [friendsList, setFriendsList] = useState([])
-  const users = useUsers()
+  const {userFriends} = useUsers()
   useEffect(() => {
     const fetchFriendsList = async () => {
       try {
@@ -24,21 +24,21 @@ export const FriendsList = ({ online }) => {
   useEffect(() => {
     const updateFriendsList = () => {
       setFriendsList((prevFriends) => {
-        const updatedFriends = prevFriends.map((friend) => users[friend.id] || friend);
-        return updatedFriends;
+        const updatedFriends = prevFriends.map((friend) => userFriends[friend.id] || friend);
+        return updatedFriends
       })
     }
 
     updateFriendsList()
-  }, [users])
+  }, [userFriends])
 
   // Memoize the filtered list based on the `online` prop
   const filteredFriendsList = useMemo(() => {
     const result = online
-      ? friendsList.filter(friend => users[friend.id]?.isOnline)
+      ? friendsList.filter(friend => userFriends[friend.id]?.isOnline)
       : friendsList
     return result
-  }, [friendsList, online, users])
+  }, [online, userFriends])
 
   return (
     <List

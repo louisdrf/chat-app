@@ -1,12 +1,13 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useSocket } from './socketContext';
-import { getOnlineUsers } from '../services/usersServices';
+import { getAllUsers, getUserAllFriends } from '../services/usersServices';
 
 const UserContext = createContext(null)
 
 export const UsersProvider = ({ children }) => {
   const {socket} = useSocket()
   const [users, setUsers] = useState({})
+  const [userFriends, setUserFriends] = useState({})
 
   useEffect(() => {
     if (!socket) {
@@ -16,18 +17,33 @@ export const UsersProvider = ({ children }) => {
 
     const fetchInitialUsers = async () => {
       try {
-        const onlineUsers = await getOnlineUsers()
-        const usersObj = onlineUsers.reduce((acc, user) => {
+        const users = await getAllUsers()
+        const usersObj = users.reduce((acc, user) => {
           acc[user.id] = { ...user }
           return acc
         }, {})
         setUsers(usersObj)
       } catch (error) {
-        console.error('Failed to fetch initial users online', error)
+        console.error('Failed to fetch initial users : ', error)
+      }
+    }
+
+
+    const fetchInitialUserFriends = async () => {
+      try {
+        const users = await getUserAllFriends()
+        const usersObj = users.reduce((acc, user) => {
+          acc[user.id] = { ...user }
+          return acc
+        }, {})
+        setUserFriends(usersObj)
+      } catch (error) {
+        console.error('Failed to fetch initial users : ', error)
       }
     }
 
     fetchInitialUsers()
+    fetchInitialUserFriends()
 
     const handleUserConnected = (user) => {
       setUsers((prevUsers) => ({
@@ -44,10 +60,9 @@ export const UsersProvider = ({ children }) => {
     }
 
     const handleNewFriend = (user) => {
-      console.log('nouvelle amitié avec ', user);
-      setUsers((prevUsers) => ({
+      setUserFriends((prevUsers) => ({
         ...prevUsers,
-        [user.id]: { ...user, isOnline: user.isOnline },
+        [user.id]: { ...user }
       }))
     }
 
@@ -63,7 +78,7 @@ export const UsersProvider = ({ children }) => {
   }, [socket])
 
   return (
-    <UserContext.Provider value={users}>
+    <UserContext.Provider value={{users, userFriends}}>
       {children}
     </UserContext.Provider>
   )

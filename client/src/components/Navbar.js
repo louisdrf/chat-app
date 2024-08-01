@@ -1,32 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, Layout } from 'antd';
-import { getAllUsers, getUserAllFriends } from '../services/usersServices';
+import { getUserAllFriends } from '../services/usersServices';
 import { UserAvatar } from './UserAvatar'
 import { TeamOutlined } from '@ant-design/icons'
 import { FriendsModal } from './friends/FriendsModal';
+import { useUsers } from '../contexts/usersContext';
 
 const { Sider } = Layout
 
 export const Navbar = ({ onConversationClick }) => {
-  const [users, setUsers] = useState([])
+  const { userFriends } = useUsers()
   const [isFriendsModalVisible, setIsFriendsModalVisible] = useState(false)
 
   const showFriendsModal = () => setIsFriendsModalVisible(true)
   const hideFriendsModal = () => setIsFriendsModalVisible(false)
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const users = await getUserAllFriends()
-        setUsers(users)
-      } 
-      catch (error) {
-        console.error("Erreur lors de la récupération des utilisateurs :", error);
-      }
-    }
-
-    fetchUsers()
-  }, [])
 
   const rooms = [
     {
@@ -35,7 +22,7 @@ export const Navbar = ({ onConversationClick }) => {
       label: 'Amis',
       onClick: () => showFriendsModal()
     },
-    ...users.map(user => ({
+    ...Object.values(userFriends).map(user => ({
       key: user.id.toString(),
       icon: <UserAvatar user={user} size={24} />, 
       label: (
