@@ -65,10 +65,10 @@ export const friendshipRequestsController = (socket: Socket) => {
         socket.to(friendship.requester.socketId).emit('new_friend', friendship.requestee) // lui indiquer qu'il a un nouvel ami => friendship.requestee
       }
 
-      // envoi à celui qui a accepté la demande
+      // envoi à celui qui a accepté la demande, à celui qui clique
       if (friendship.requestee.socketId) {
-        socket.to(friendship.requestee.socketId).emit('requestee_accepted_the_request', friendship) // lui indiquer que lui et le demandeur sont maintenant amis
-        socket.to(friendship.requestee.socketId).emit('new_friend', friendship.requester) // lui indiquer qu'il a un nouvel ami => friendship.requester
+        socket.emit('requestee_accepted_the_request', friendship) // lui indiquer que lui et le demandeur sont maintenant amis
+        socket.emit('new_friend', friendship.requester) // lui indiquer qu'il a un nouvel ami => friendship.requester
       }
 
     } catch (error) {

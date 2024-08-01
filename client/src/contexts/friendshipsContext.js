@@ -63,7 +63,7 @@ export const FriendshipsProvider = ({ children }) => {
       setReceivedFriendships((prev) => prev.filter((request) => request.id !== new_friendship.id))
       notification.success({
         message: "Demande d'ami acceptée",
-        description: `${friendship.requester.username} et toi êtes désormais amis.`,
+        description: `${new_friendship.requester.username} et toi êtes désormais amis.`,
         duration: 3,
       })
     }
