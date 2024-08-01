@@ -4,68 +4,71 @@ import { Friendship } from "../../database/entities/friendship";
 import { User } from "../../database/entities/user";
 
 export const friendshipRequestsController = (socket: Socket) => {
-    const friendshipRepo = AppDataSource.getRepository(Friendship);
-    const userRepo = AppDataSource.getRepository(User);
+  const friendshipRepo = AppDataSource.getRepository(Friendship);
+  const userRepo = AppDataSource.getRepository(User);
 
-    socket.on('send_friendship_request', async (requestee_username: string, requester_username: string) => {
-        try {
+  socket.on('send_friendship_request', async (requestee_username: string, requester_username: string) => {
+    try {
+      if (requestee_username === requester_username) {
+        return socket.emit('friendship_request_error', { error: "Il s'agirait de se faire des amis..." });
+      }
 
-            if(requestee_username === requester_username) {
-                return socket.emit('friendship_request_error', { error: "Il s'agirait de se faire des amis..." })
-            }
+      const requester = await userRepo.findOne({ where: { username: requester_username } });
+      if (!requester) return socket.emit('friendship_request_error', { error: 'Envoyeur de la demande introuvable.' });
 
-            const requester = await userRepo.findOne({ where: { username: requester_username } })
-            if (!requester)  return socket.emit('friendship_request_error', { error: 'Envoyeur de la demande introuvable.' });
+      const requestee = await userRepo.findOne({ where: { username: requestee_username } });
+      if (!requestee) return socket.emit('friendship_request_error', { error: 'Receveur de la demande introuvable.' });
 
-            const requestee = await userRepo.findOne({ where: { username: requestee_username } });
-            if (!requestee) return socket.emit('friendship_request_error', { error: 'Receveur de la demande introuvable.' });
+      const existingFriendshipRequest = await friendshipRepo.findOne({
+        where: [
+          { requester: requester, requestee: requestee },
+          { requester: requestee, requestee: requester }
+        ]
+      });
 
-            const existingFriendshipRequest = await friendshipRepo.findOne({
-                where: [
-                    { requester: requester, requestee: requestee },
-                    { requester: requestee, requestee: requester }
-                ]
-            })
+      if (existingFriendshipRequest) {
+        const message = existingFriendshipRequest.isAccepted ? `${requestee_username} et vous êtes déjà amis.` : "Demande d'ami déjà envoyée.";
+        return socket.emit('friendship_request_error', { error: message });
+      }
 
-            if (existingFriendshipRequest) {
-                 const message = existingFriendshipRequest.isAccepted ? `${requestee_username} et vous êtes déjà amis.` : "Demande d'ami déjà envoyée."
-                return socket.emit('friendship_request_error', { error: message })
-            }
+      const friendshipRequest = new Friendship(requester, requestee);
+      await friendshipRepo.save(friendshipRequest);
 
-            const friendshipRequest = new Friendship(requester, requestee)
+      // Notify the requester
+      socket.emit('friendship_request_sent', { message: "Votre demande a été envoyée.", friendship: friendshipRequest });
 
-            await friendshipRepo.save(friendshipRequest)
+      // Notify the requestee
+      socket.to(requestee.socketId).emit('new_friendship_request', { friendship: friendshipRequest });
 
-            // Notify the requester
-            socket.emit('friendship_request_sent', { message: 'Demande envoyée.', demand: friendshipRequest });
+    } catch (error) {
+      console.error("Une erreur est survenue pendant l'envoi de la demande d'ami :", error);
+      socket.emit('friendship_request_error', { error: "Une erreur interne est survenue. Réessayez plus tard." });
+    }
+  });
 
-            // Optionally, notify the requestee
-            socket.to(requestee_username).emit('new_friendship_request', { requester })
+  socket.on('accept_friendship_request', async (friendshipId: number) => {
+    try {
+      const friendship = await friendshipRepo.findOne({ where: { id: friendshipId }, relations: ["requester", "requestee"] });
 
-        } catch (error) {
-            console.error("Une erreur est survenue pendant l'envoi de la demande d'ami :", error);
-            socket.emit('friendship_request_error', { error: "Une erreur interne est survenue. Réessayez plus tard." });
-        }
-    })
+      if (!friendship) {
+        return socket.emit('friendship_acceptance_error', { error: 'Demande d\'ami non trouvée.' });
+      }
 
-    socket.on('accept_friendship_request', async (friendshipId: number) => {
-        try {
-            const friendship = await friendshipRepo.findOne({ where: { id: friendshipId } })
+      friendship.isAccepted = true;
+      friendship.acceptedAt = new Date();
+      await friendshipRepo.save(friendship);
 
-            if (!friendship) return socket.emit('friendship_acceptance_error', { error: 'Demande d\'ami non trouvée.' })
+      // Notify the requester
+      if (friendship.requester.socketId) {
+        socket.to(friendship.requester.socketId).emit('friendship_request_accepted_requester', { friendship });
+      }
 
-            friendship.isAccepted = true
-            friendship.acceptedAt = new Date()
-            await friendshipRepo.save(friendship)
+      // Notify the requestee
+      socket.emit('friendship_request_accepted_requestee', { friendship });
 
-            // Notify both users about the acceptance
-            socket.emit('friendship_request_accepted', { message: 'Demande acceptée.', demand: friendship })
-            socket.to(friendship.requester.uid).emit('friendship_request_accepted', { message: 'Votre demande d\'ami a été acceptée.', demand: friendship })
-            socket.to(friendship.requestee.uid).emit('friendship_request_accepted', { message: 'Vous avez accepté une demande d\'ami.', demand: friendship })
-
-        } catch (error) {
-            console.error("Une erreur est survenue pendant l'acceptation de la demande d'ami :", error)
-            socket.emit('friendship_acceptance_error', { error: "Une erreur interne est survenue. Réessayez plus tard." })
-        }
-    })
-}
+    } catch (error) {
+      console.error("Une erreur est survenue pendant l'acceptation de la demande d'ami :", error);
+      socket.emit('friendship_acceptance_error', { error: "Une erreur interne est survenue. Réessayez plus tard." });
+    }
+  });
+};

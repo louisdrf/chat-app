@@ -24,6 +24,9 @@ export class User {
   @Column()
   uid: string
 
+  @Column({ default : null })
+  socketId!: string
+
   @OneToOne(() => Token, token => token.user, { onDelete: 'CASCADE' })
   @JoinColumn()
   token: Token

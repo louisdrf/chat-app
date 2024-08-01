@@ -1,23 +1,10 @@
 import React, { useMemo } from 'react';
-import { List, Button, Typography, message as antdMessage } from 'antd';
-import { useFriendships } from '../../../contexts/friendshipsContext'; // Assurez-vous d'importer correctement
-import { useSocket } from '../../../contexts/socketContext'; // Assurez-vous d'importer correctement
+import { List, Button, Typography } from 'antd';
+import { useFriendships } from '../../../contexts/friendshipsContext';
+import { useSocket } from '../../../contexts/socketContext';
+import { formatTimeElapsed } from '../../../services/helpers';
 
 const { Text } = Typography;
-
-// Fonction pour formater le temps écoulé depuis l'envoi de la demande
-const formatTimeElapsed = (sentAt) => {
-  const now = new Date();
-  const sentDate = new Date(sentAt);
-  const timeDiff = now - sentDate;
-  const hoursDiff = Math.floor(timeDiff / (1000 * 60 * 60));
-  const daysDiff = Math.floor(hoursDiff / 24);
-
-  if (daysDiff > 0) {
-    return `Il y a ${daysDiff} jour${daysDiff > 1 ? 's' : ''}`;
-  }
-  return `Il y a ${hoursDiff} heure${hoursDiff > 1 ? 's' : ''}`;
-};
 
 export const ReceivedFriendshipsList = () => {
   const { receivedFriendships } = useFriendships();
@@ -27,12 +14,6 @@ export const ReceivedFriendshipsList = () => {
     socket.emit('accept_friendship_request', friendshipId);
   };
 
-  // Écouteur pour la réponse d'acceptation de demande d'ami
-  socket.on('friendship_request_accepted', (data) => {
-    antdMessage.success('Demande d\'ami acceptée.');
-  });
-
-  // Mémorisation de la liste des demandes reçues
   const receivedRequestsList = useMemo(() => {
     return receivedFriendships || [];
   }, [receivedFriendships]);
@@ -73,5 +54,5 @@ export const ReceivedFriendshipsList = () => {
         </List.Item>
       )}
     />
-  )
-}
+  );
+};
