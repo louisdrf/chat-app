@@ -4,7 +4,6 @@ export const getUserPendingFriendships = async() => {
     try {
         const username = localStorage.getItem('username')
         const response = await api.get(`/users/${username}/friendships/pending`)
-        console.log('requete init : ', response.data.friendships);
         return response.data.friendships
       }
       catch (error) {

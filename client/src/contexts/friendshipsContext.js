@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useSocket } from './socketContext';
 import { getUserPendingFriendships, getUserReceivedFriendships } from '../services/friendshipsServices';
-import { notification } from "antd";
+import { Button, notification } from "antd";
 
 const FriendshipContext = createContext(null);
 
@@ -45,8 +45,13 @@ export const FriendshipsProvider = ({ children }) => {
       setReceivedFriendships((prev) => [...prev, receivedRequest])
       notification.info({
         message: "Nouvelle demande d'ami",
-        description: `${receivedRequest.requester.username} vous a envoyé une demande d'ami.`,
-        duration: 3,
+        description: (
+          <div>
+            <p>{`${receivedRequest.requester.username} vous a envoyé une demande d'ami.`}</p>
+            <Button type="primary" onClick={() => socket.emit('accept_friendship_request', receivedRequest.id)}>Accepter</Button>
+          </div>
+        ),
+        duration: 5
       })
     }
 
