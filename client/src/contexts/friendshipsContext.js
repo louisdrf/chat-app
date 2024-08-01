@@ -6,7 +6,7 @@ import { notification } from "antd";
 const FriendshipContext = createContext(null);
 
 export const FriendshipsProvider = ({ children }) => {
-  const socket = useSocket();
+  const {socket} = useSocket();
   const [pendingFriendships, setPendingFriendships] = useState([]);
   const [receivedFriendships, setReceivedFriendships] = useState([]);
 
@@ -39,6 +39,11 @@ export const FriendshipsProvider = ({ children }) => {
 
     const handleFriendshipRequestSent = (data) => {
       setPendingFriendships((prev) => [...prev, data.friendship])
+      notification.success({
+        message: "Demande envoyée.",
+        description: `Votre demande a bien été envoyée à ${data.friendship.requestee.username}.`,
+        duration: 5,
+      })
     }
 
     const handleFriendshipRequestReceived = (data) => {

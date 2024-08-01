@@ -8,7 +8,7 @@ const { Text } = Typography;
 
 export const ReceivedFriendshipsList = () => {
   const { receivedFriendships } = useFriendships();
-  const socket = useSocket();
+  const {socket} = useSocket();
 
   const handleAcceptRequest = (friendshipId) => {
     socket.emit('accept_friendship_request', friendshipId);

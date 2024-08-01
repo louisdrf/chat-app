@@ -7,7 +7,7 @@ const { TextArea } = Input
 
 export const InputMessageComponent = ({ room }) => {
   const [message, setMessage] = useState('')
-  const socket = useSocket()
+  const {socket} = useSocket()
 
   const handleSendMessage = () => {
     if (message.trim()) {

@@ -1,25 +1,27 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { login } from '../services/authServices'
+import { login } from '../services/authServices';
+import { useSocket } from '../contexts/socketContext';
 
 export const LoginComponent = () => {
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { resetSocket } = useSocket();
 
-  const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
   const onFinish = async (values) => {
-    setLoading(true)
+    setLoading(true);
     try {
-      await login(values)
-      message.success('Connexion réussie.')
-      navigate('/')
-
+      await login(values);
+      message.success('Connexion réussie.');
+      resetSocket(); // Reset the socket after successful login
+      navigate('/');
     } catch (error) {
       console.error('Erreur lors de la connexion', error);
-      message.error(error.message)
+      message.error(error.message);
     }
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   return (
     <Form
@@ -47,6 +49,5 @@ export const LoginComponent = () => {
         </Button>
       </Form.Item>
     </Form>
-  )
-}
-
+  );
+};

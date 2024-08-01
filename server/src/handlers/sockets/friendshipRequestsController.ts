@@ -14,10 +14,10 @@ export const friendshipRequestsController = (socket: Socket) => {
       }
 
       const requester = await userRepo.findOne({ where: { username: requester_username } });
-      if (!requester) return socket.emit('friendship_request_error', { error: 'Envoyeur de la demande introuvable.' });
+      if (!requester) return socket.emit('friendship_request_error', { error: 'Utilisateur introuvable.' });
 
       const requestee = await userRepo.findOne({ where: { username: requestee_username } });
-      if (!requestee) return socket.emit('friendship_request_error', { error: 'Receveur de la demande introuvable.' });
+      if (!requestee) return socket.emit('friendship_request_error', { error: 'Utilisateur introuvable.' });
 
       const existingFriendshipRequest = await friendshipRepo.findOne({
         where: [
@@ -54,9 +54,9 @@ export const friendshipRequestsController = (socket: Socket) => {
         return socket.emit('friendship_acceptance_error', { error: 'Demande d\'ami non trouvée.' });
       }
 
-      friendship.isAccepted = true;
-      friendship.acceptedAt = new Date();
-      await friendshipRepo.save(friendship);
+      friendship.isAccepted = true
+      friendship.acceptedAt = new Date()
+      await friendshipRepo.save(friendship)
 
       // Notify the requester
       if (friendship.requester.socketId) {
@@ -64,11 +64,17 @@ export const friendshipRequestsController = (socket: Socket) => {
       }
 
       // Notify the requestee
-      socket.emit('friendship_request_accepted_requestee', { friendship });
+      socket.emit('friendship_request_accepted_requestee', { friendship })
+
+      socket.emit('new_friend', friendship.requester) 
+
+      console.log("nouvel ami pour : ", friendship.requester.socketId);
+      
+      socket.to(friendship.requester.socketId).emit('new_friend', friendship.requestee)
 
     } catch (error) {
       console.error("Une erreur est survenue pendant l'acceptation de la demande d'ami :", error);
       socket.emit('friendship_acceptance_error', { error: "Une erreur interne est survenue. Réessayez plus tard." });
     }
-  });
-};
+  })
+}

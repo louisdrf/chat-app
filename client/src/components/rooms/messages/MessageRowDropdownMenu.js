@@ -5,7 +5,7 @@ import { MoreOutlined, EditOutlined, DeleteOutlined, PushpinOutlined } from '@an
 import { useSocket } from '../../../contexts/socketContext'; 
 
 export const MessageRowDropdownMenu = ({ message, room, onEdit }) => {
-    const socket = useSocket();
+    const {socket} = useSocket();
     const [isPinned, setIsPinned] = useState(message.isPinned);
 
     const handleDelete = () => {

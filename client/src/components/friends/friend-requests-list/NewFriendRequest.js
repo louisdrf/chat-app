@@ -5,7 +5,7 @@ import { useSocket } from '../../../contexts/socketContext';
 const { Title, Text } = Typography
 
 export const NewFriendRequest = () => {
-  const socket = useSocket();
+  const {socket} = useSocket();
   const [friendUsername, setFriendUsername] = useState('');
   const [message, setMessage] = useState('');
   const [isError, setIsError] = useState(false)

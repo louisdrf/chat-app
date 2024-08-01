@@ -5,7 +5,7 @@ import { useSocket } from '../../contexts/socketContext';
 import { MessageRowComponent } from './messages/MessageRowComponent';
 
 export const ConversationComponent = ({ room }) => {
-  const socket = useSocket()
+  const {socket} = useSocket()
   const [messages, setMessages] = useState(room.messages)
 
   useEffect(() => {

@@ -10,7 +10,7 @@ import TextArea from 'antd/es/input/TextArea';
 const { Text, Link } = Typography;
 
 export const MessageRowComponent = ({ user, message, room }) => {
-  const socket = useSocket()
+  const {socket} = useSocket()
 
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(message.content)

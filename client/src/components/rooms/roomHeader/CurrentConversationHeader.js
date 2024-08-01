@@ -8,7 +8,7 @@ import { RoomMembersModal } from './MembersListModal';
 
 
 export const CurrentConversationHeader = ({ name, room }) => {
-  const socket = useSocket()
+  const {socket} = useSocket()
 
   // show pinned messages
   const [pinnedMessages, setPinnedMessages] = useState(room.messages.filter(m => m.isPinned))

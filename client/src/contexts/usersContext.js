@@ -5,7 +5,7 @@ import { getOnlineUsers } from '../services/usersServices';
 const UserContext = createContext(null)
 
 export const UsersProvider = ({ children }) => {
-  const socket = useSocket()
+  const {socket} = useSocket()
   const [users, setUsers] = useState({})
 
   useEffect(() => {
@@ -43,12 +43,22 @@ export const UsersProvider = ({ children }) => {
       }))
     }
 
+    const handleNewFriend = (user) => {
+      console.log('nouvelle amitié avec ', user);
+      setUsers((prevUsers) => ({
+        ...prevUsers,
+        [user.id]: { ...user, isOnline: user.isOnline },
+      }))
+    }
+
     socket.on('user_connected', handleUserConnected)
     socket.on('user_disconnected', handleUserDisconnected)
+    socket.on('new_friend', handleNewFriend)
 
     return () => {
       socket.off('user_connected', handleUserConnected)
       socket.off('user_disconnected', handleUserDisconnected)
+      socket.off('new_friend', handleNewFriend)
     }
   }, [socket])
 

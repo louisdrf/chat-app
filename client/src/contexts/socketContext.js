@@ -1,32 +1,42 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import io from 'socket.io-client';
 
-const SocketContext = createContext(null)
+const SocketContext = createContext(null);
 
 export const SocketProvider = ({ children }) => {
-  const [socket, setSocket] = useState(null)
+  const [socket, setSocket] = useState(null);
+
+  const resetSocket = () => {
+    if (socket) {
+      socket.disconnect();
+    }
+    const newSocket = io('http://localhost:3001', {
+      query: { token: localStorage.getItem('token') }
+    });
+
+    newSocket.on('connect', () => {
+      console.log('Socket connected:', newSocket.id);
+      setSocket(newSocket);
+    });
+
+    return newSocket;
+  };
 
   useEffect(() => {
-    const socketInstance = io('http://localhost:3001', {
-      query: { token: localStorage.getItem('token') } 
-    })
-    
-    socketInstance.on('connect', () => {
-      console.log('Socket connected:', socketInstance.id);
-      setSocket(socketInstance);
-    })
-
+    resetSocket();
     return () => {
-      socketInstance.disconnect()
-      console.log('socket instance context disconnected');
-    }
-  }, [])
+      if (socket) {
+        socket.disconnect();
+        console.log('Socket instance context disconnected');
+      }
+    };
+  }, []);
 
   return (
-    <SocketContext.Provider value={socket}>
+    <SocketContext.Provider value={{ socket, resetSocket }}>
       {children}
     </SocketContext.Provider>
-  )
-}
+  );
+};
 
-export const useSocket = () => useContext(SocketContext)
+export const useSocket = () => useContext(SocketContext);

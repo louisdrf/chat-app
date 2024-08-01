@@ -19,7 +19,7 @@ export const UserAvatar = ({ user, size = 42 }) => {
     width: 10,
     height: 10,
     borderRadius: '50%',
-    backgroundColor: isOnline ? 'green' : 'gray',
+    backgroundColor: isOnline ? 'green' : 'red',
     border: '2px solid white',
   }
 
