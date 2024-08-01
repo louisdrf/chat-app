@@ -3,40 +3,43 @@ import { useSocket } from './socketContext';
 import { getUserPendingFriendships, getUserReceivedFriendships } from '../services/friendshipsServices';
 import { Button, notification } from "antd";
 
-const FriendshipContext = createContext(null);
+const FriendshipContext = createContext(null)
 
 export const FriendshipsProvider = ({ children }) => {
-  const {socket} = useSocket();
-  const [pendingFriendships, setPendingFriendships] = useState([]);
-  const [receivedFriendships, setReceivedFriendships] = useState([]);
+  const {socket} = useSocket()
+  const [pendingFriendships, setPendingFriendships] = useState([])
+  const [receivedFriendships, setReceivedFriendships] = useState([])
 
   useEffect(() => {
     if (!socket) {
-      console.error('Socket instance is not available');
-      return;
+      console.error('Socket instance is not available')
+      return
     }
 
+    // INITIALISATION DES DONNEES
     const fetchInitialPendingRequests = async () => {
       try {
-        const pendingRequests = await getUserPendingFriendships();
-        setPendingFriendships(pendingRequests);
+        const pendingRequests = await getUserPendingFriendships()
+        setPendingFriendships(pendingRequests)
       } catch (error) {
-        console.error('Failed to fetch initial pending friendships', error);
+        console.error('Failed to fetch initial pending friendships', error)
       }
-    };
+    }
 
     const fetchInitialReceivedRequests = async () => {
       try {
-        const receivedRequests = await getUserReceivedFriendships();
-        setReceivedFriendships(receivedRequests);
+        const receivedRequests = await getUserReceivedFriendships()
+        setReceivedFriendships(receivedRequests)
       } catch (error) {
-        console.error('Failed to fetch initial received friendships', error);
+        console.error('Failed to fetch initial received friendships', error)
       }
-    };
+    }
 
-    fetchInitialPendingRequests();
-    fetchInitialReceivedRequests();
+    fetchInitialPendingRequests()
+    fetchInitialReceivedRequests()
 
+
+    // EVENEMENTS D'ECOUTE
     const sendNewFriendRequest = (friendship) => { // pour celui qui envoie la demande d'ami
       setPendingFriendships((prev) => [...prev, friendship])
     }
@@ -90,7 +93,7 @@ export const FriendshipsProvider = ({ children }) => {
     <FriendshipContext.Provider value={{ pendingFriendships, receivedFriendships }}>
       {children}
     </FriendshipContext.Provider>
-  );
-};
+  )
+}
 
-export const useFriendships = () => useContext(FriendshipContext);
+export const useFriendships = () => useContext(FriendshipContext)

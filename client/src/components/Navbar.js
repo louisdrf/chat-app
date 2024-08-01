@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, Layout } from 'antd';
-import { getAllUsers } from '../services/usersServices';
+import { getAllUsers, getUserAllFriends } from '../services/usersServices';
 import { UserAvatar } from './UserAvatar'
 import { TeamOutlined } from '@ant-design/icons'
 import { FriendsModal } from './friends/FriendsModal';
@@ -17,8 +17,7 @@ export const Navbar = ({ onConversationClick }) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        let users = await getAllUsers()
-        users = users.filter(u => u.username != localStorage.getItem("username"))
+        const users = await getUserAllFriends()
         setUsers(users)
       } 
       catch (error) {
@@ -34,7 +33,7 @@ export const Navbar = ({ onConversationClick }) => {
       key: 'friends',
       icon: <TeamOutlined />,
       label: 'Amis',
-      onClick: () => setIsFriendsModalVisible(true)
+      onClick: () => showFriendsModal()
     },
     ...users.map(user => ({
       key: user.id.toString(),

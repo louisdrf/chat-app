@@ -20,6 +20,18 @@ export const FriendsList = ({ online }) => {
     fetchFriendsList()
   }, [])
 
+
+  useEffect(() => {
+    const updateFriendsList = () => {
+      setFriendsList((prevFriends) => {
+        const updatedFriends = prevFriends.map((friend) => users[friend.id] || friend);
+        return updatedFriends;
+      })
+    }
+
+    updateFriendsList()
+  }, [users])
+
   // Memoize the filtered list based on the `online` prop
   const filteredFriendsList = useMemo(() => {
     const result = online
