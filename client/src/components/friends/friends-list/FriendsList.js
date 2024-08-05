@@ -2,29 +2,16 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { List, message as antdMessage } from 'antd';
 import { FriendItem } from './FriendItem';
 import { useUsers } from '../../../contexts/usersContext';
-import { getUserAllFriends } from '../../../services/usersServices';
 
 export const FriendsList = ({ online }) => {
-  const [friendsList, setFriendsList] = useState([])
   const {userFriends} = useUsers()
-  useEffect(() => {
-    const fetchFriendsList = async () => {
-      try {
-        const friends = await getUserAllFriends()
-        setFriendsList(friends)
-      } catch (error) {
-        antdMessage.error('Erreur lors de la récupération des amis.')
-      }
-    }
-
-    fetchFriendsList()
-  }, [])
-
+  const [friendsList, setFriendsList] = useState(userFriends)
+ 
 
   useEffect(() => {
     const updateFriendsList = () => {
       setFriendsList((prevFriends) => {
-        const updatedFriends = prevFriends.map((friend) => userFriends[friend.id] || friend);
+        const updatedFriends = prevFriends.map((friend) => userFriends[friend.id] || friend)
         return updatedFriends
       })
     }
@@ -34,6 +21,8 @@ export const FriendsList = ({ online }) => {
 
   // Memoize the filtered list based on the `online` prop
   const filteredFriendsList = useMemo(() => {
+    console.log(friendsList);
+    
     const result = online
       ? friendsList.filter(friend => userFriends[friend.id]?.isOnline)
       : friendsList

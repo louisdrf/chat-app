@@ -6,8 +6,8 @@ const UserContext = createContext(null)
 
 export const UsersProvider = ({ children }) => {
   const {socket} = useSocket()
-  const [users, setUsers] = useState({})
-  const [userFriends, setUserFriends] = useState({})
+  const [users, setUsers] = useState([])
+  const [userFriends, setUserFriends] = useState([])
 
   useEffect(() => {
     if (!socket) {
@@ -17,12 +17,8 @@ export const UsersProvider = ({ children }) => {
 
     const fetchInitialUsers = async () => {
       try {
-        const users = await getAllUsers()
-        const usersObj = users.reduce((acc, user) => {
-          acc[user.id] = { ...user }
-          return acc
-        }, {})
-        setUsers(usersObj)
+        const users = await getAllUsers()       
+        setUsers(users)
       } catch (error) {
         console.error('Failed to fetch initial users : ', error)
       }
@@ -31,49 +27,48 @@ export const UsersProvider = ({ children }) => {
 
     const fetchInitialUserFriends = async () => {
       try {
-        const users = await getUserAllFriends()
-        const usersObj = users.reduce((acc, user) => {
-          acc[user.id] = { ...user }
-          return acc
-        }, {})
-        setUserFriends(usersObj)
+        const friends = await getUserAllFriends()
+        setUserFriends(friends)
       } catch (error) {
-        console.error('Failed to fetch initial users : ', error)
+        console.error('Failed to fetch initial friends : ', error)
       }
     }
 
     fetchInitialUsers()
     fetchInitialUserFriends()
 
+
     const handleUserConnected = (user) => {
-      setUsers((prevUsers) => ({
-        ...prevUsers,
-        [user.id]: { ...user, isOnline: true },
-      }))
+      user.isOnline = true
+      setUsers((prevUsers) => ({ ...prevUsers, user }))
     }
 
     const handleUserDisconnected = (user) => {
-      setUsers((prevUsers) => ({
-        ...prevUsers,
-        [user.id]: { ...user, isOnline: false },
-      }))
+      user.isOnline = false
+      setUsers((prevUsers) => ({ ...prevUsers, user }))
     }
 
-    const handleNewFriend = (user) => {
-      setUserFriends((prevUsers) => ({
-        ...prevUsers,
-        [user.id]: { ...user }
-      }))
+    const handleNewFriend = (newFriend) => {
+      setUserFriends((currentFriends) => ({ ...currentFriends, newFriend }))
+    }
+
+    const handleDeleteFriend = (user) => {
+      setUserFriends((prevFriends) => {
+        const friendsWithoutUser = prevFriends.filter(friend => friend.id !== user.id)
+        return friendsWithoutUser
+      })
     }
 
     socket.on('user_connected', handleUserConnected)
     socket.on('user_disconnected', handleUserDisconnected)
     socket.on('new_friend', handleNewFriend)
+    socket.on('delete_friend', handleDeleteFriend)
 
     return () => {
       socket.off('user_connected', handleUserConnected)
       socket.off('user_disconnected', handleUserDisconnected)
       socket.off('new_friend', handleNewFriend)
+      socket.off('delete_friend', handleDeleteFriend)
     }
   }, [socket])
 

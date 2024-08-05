@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Button, Popconfirm } from 'antd';
-import { UserAvatar } from '../../UserAvatar'; // Assurez-vous que ce chemin est correct
+import { Card, Button, Popconfirm, message } from 'antd';
+import { UserAvatar } from '../../UserAvatar'; 
 import { DeleteOutlined } from '@ant-design/icons';
-import { useSocket } from '../../../contexts/socketContext'; // Assurez-vous que ce chemin est correct
+import { useSocket } from '../../../contexts/socketContext'; 
 import { getFriendship } from '../../../services/friendshipsServices';
 
 export const FriendItem = ({ user }) => {
-  console.log('Montage composant avec utilisateur:', user)
 
-  const { socket } = useSocket();
-  const [friendship, setFriendship] = useState(null)
+  const { socket } = useSocket()
+  const [friendship, setFriendship] = useState({})
 
   useEffect(() => {
     const fetchFriendship = async () => {
@@ -22,6 +21,7 @@ export const FriendItem = ({ user }) => {
     }
 
     fetchFriendship()
+    
   }, [])
 
   const handleDelete = () => {
@@ -31,6 +31,21 @@ export const FriendItem = ({ user }) => {
       console.error('Aucune amitié trouvée à supprimer.')
     }
   }
+
+  useEffect(() => {
+    
+    const showDeletionSuccessNotification = () => {
+      message.info(`${user.username} ne fait plus partie de vos amis.`)
+    }
+
+    socket.on('friendship_deletion_success', showDeletionSuccessNotification)
+
+    return () => {
+      socket.off('friendship_deletion_success', showDeletionSuccessNotification)
+    }
+  }, [socket])
+
+  
 
   return (
     <Card

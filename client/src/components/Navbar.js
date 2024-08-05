@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Menu, Layout } from 'antd';
-import { getUserAllFriends } from '../services/usersServices';
 import { UserAvatar } from './UserAvatar'
 import { TeamOutlined } from '@ant-design/icons'
 import { FriendsModal } from './friends/FriendsModal';
@@ -15,21 +14,21 @@ export const Navbar = ({ onConversationClick }) => {
   const showFriendsModal = () => setIsFriendsModalVisible(true)
   const hideFriendsModal = () => setIsFriendsModalVisible(false)
 
-  const rooms = [
+  const friendsList = [
     {
       key: 'friends',
       icon: <TeamOutlined />,
       label: 'Amis',
       onClick: () => showFriendsModal()
     },
-    ...Object.values(userFriends).map(user => ({
+    userFriends.map(user => ({
       key: user.id.toString(),
       icon: <UserAvatar user={user} size={24} />, 
       label: (
         <span style={{ marginLeft: 10 }}>{user.username}</span>
       ),
       onClick: () => onConversationClick(user.username)
-    })),
+    }))
   ]
 
   return (
@@ -37,7 +36,7 @@ export const Navbar = ({ onConversationClick }) => {
             <Menu
             style={{ height: '100vh'}}
               theme='light'
-              items={rooms}
+              items={friendsList}
             />
             <FriendsModal visible={isFriendsModalVisible} onCancel={hideFriendsModal}/>
           </Sider>
