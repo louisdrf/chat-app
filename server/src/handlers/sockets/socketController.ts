@@ -21,6 +21,8 @@ export const initSocketController = (io: SocketIOServer) => {
         await updateUserSocketId(user.id, socket.id)
         socket.broadcast.emit('user_connected', user)
     }
+
+    
     socket.on('login', async (username: string) => {
       const userRepo = AppDataSource.getRepository(User);
 
@@ -39,13 +41,14 @@ export const initSocketController = (io: SocketIOServer) => {
       }
     })
 
-      socket.on('disconnect', async () => {
-        if (user) {
-            await updateUserOnlineStatus(user.id, false)
-            await updateUserSocketId(user.id, "")
-            socket.broadcast.emit('user_disconnected', user)
-        }
-      })
+
+    socket.on('disconnect', async () => {
+      if (user) {
+          await updateUserOnlineStatus(user.id, false)
+          await updateUserSocketId(user.id, "")
+          socket.broadcast.emit('user_disconnected', user)
+      }
+    })
   })
 
 }

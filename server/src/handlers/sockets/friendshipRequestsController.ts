@@ -92,6 +92,9 @@ export const friendshipRequestsController = (socket: Socket) => {
       if (friendship.requester.socketId) {      
         socket.emit('friendship_deletion_success', deletedFriendship) // lui indiquer que la suppression a bien été effectuée
         socket.emit('delete_friend', friendship.requestee) // lui indiquer que son ami a été supprimé
+        if (friendship.requestee.socketId) {   
+          socket.to(friendship.requestee.socketId).emit('delete_friend', friendship.requester) // indiquer a son ami qu'ils ne le sont plus
+        }
       }
 
     } catch (error) {
