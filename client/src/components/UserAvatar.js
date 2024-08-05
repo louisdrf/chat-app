@@ -1,11 +1,18 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Avatar } from 'antd';
 import { minidenticon } from 'minidenticons';
-import { useUsers } from '../contexts/usersContext'; // Assurez-vous du bon chemin d'import
+import { useUsers } from '../contexts/usersContext'; 
 
 export const UserAvatar = ({ user, size = 42 }) => {
-  const users = useUsers()
-  const isOnline = users[user.id]?.isOnline
+  const { users } = useUsers()
+  const [isOnline, setIsOnline] = useState(user.isOnline)
+
+  useEffect(() => {    
+    const updatedUser = users.find(u => u.id === user.id)
+    if (updatedUser) {
+      setIsOnline(updatedUser.isOnline)
+    }
+  }, [users, user.id])
 
   const avatarStyle = {
     backgroundColor: 'rgba(128, 128, 128, 0.1)',

@@ -40,16 +40,16 @@ export const UsersProvider = ({ children }) => {
 
     const handleUserConnected = (user) => {
       user.isOnline = true
-      setUsers((prevUsers) => ({ ...prevUsers, user }))
+      setUsers((prevUsers) => ([ ...prevUsers, user ]))
     }
 
     const handleUserDisconnected = (user) => {
       user.isOnline = false
-      setUsers((prevUsers) => ({ ...prevUsers, user }))
+      setUsers((prevUsers) => ([ ...prevUsers, user ]))      
     }
 
     const handleNewFriend = (newFriend) => {
-      setUserFriends((currentFriends) => ({ ...currentFriends, newFriend }))
+      setUserFriends((currentFriends) => ([...currentFriends, newFriend]))
     }
 
     const handleDeleteFriend = (user) => {

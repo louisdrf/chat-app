@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Menu, Layout } from 'antd';
 import { UserAvatar } from './UserAvatar'
 import { TeamOutlined } from '@ant-design/icons'
@@ -9,19 +9,25 @@ const { Sider } = Layout
 
 export const Navbar = ({ onConversationClick }) => {
   const { userFriends } = useUsers()
+  const [friends, setFriends] = useState(userFriends)
   const [isFriendsModalVisible, setIsFriendsModalVisible] = useState(false)
 
   const showFriendsModal = () => setIsFriendsModalVisible(true)
   const hideFriendsModal = () => setIsFriendsModalVisible(false)
 
-  const friendsList = [
+
+  useEffect(() => {
+      setFriends(userFriends)
+  }, [userFriends])
+
+  const friendsListItems = [
     {
       key: 'friends',
       icon: <TeamOutlined />,
       label: 'Amis',
       onClick: () => showFriendsModal()
     },
-    userFriends.map(user => ({
+    ...friends.map(user => ({
       key: user.id.toString(),
       icon: <UserAvatar user={user} size={24} />, 
       label: (
@@ -36,7 +42,7 @@ export const Navbar = ({ onConversationClick }) => {
             <Menu
             style={{ height: '100vh'}}
               theme='light'
-              items={friendsList}
+              items={friendsListItems}
             />
             <FriendsModal visible={isFriendsModalVisible} onCancel={hideFriendsModal}/>
           </Sider>
