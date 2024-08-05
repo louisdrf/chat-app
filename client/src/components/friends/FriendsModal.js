@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Modal, Button, Tabs } from 'antd';
 import { FriendsList } from './friends-list/FriendsList';
 import { NewFriendRequest } from './friend-requests-list/NewFriendRequest';
 import { PendingFriendshipsList } from './friend-requests-list/PendingFriendshipsList';
 import { ReceivedFriendshipsList } from './friend-requests-list/ReceivedFriendshipsList';
+import { OnlineFriendsList } from './friends-list/OnlineFriendsList';
 
-const { TabPane } = Tabs;
+const { TabPane } = Tabs
 
 export const FriendsModal = ({ visible, onCancel }) => {
   return (
@@ -23,10 +24,10 @@ export const FriendsModal = ({ visible, onCancel }) => {
     >
       <Tabs defaultActiveKey="1">
         <TabPane tab="En ligne" key="1">
-          <FriendsList online={true} />
+          <OnlineFriendsList/>
         </TabPane>
         <TabPane tab="Tous mes amis" key="2">
-          <FriendsList online={false} />
+          <FriendsList/>
         </TabPane>
         <TabPane tab="Demandes en attente" key="3">
           <PendingFriendshipsList/>

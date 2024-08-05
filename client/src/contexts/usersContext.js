@@ -4,10 +4,35 @@ import { getAllUsers, getUserAllFriends } from '../services/usersServices';
 
 const UserContext = createContext(null)
 
+
+
 export const UsersProvider = ({ children }) => {
   const {socket} = useSocket()
   const [users, setUsers] = useState([])
   const [userFriends, setUserFriends] = useState([])
+
+
+  const updateUserOnlineStatus = (user, isOnline) => {
+    setUsers((prevUsers) => {
+      const userIndex = prevUsers.findIndex(u => u.id === user.id)
+      if (userIndex !== -1) {
+        const updatedUsers = [...prevUsers]
+        updatedUsers[userIndex] = { ...updatedUsers[userIndex], isOnline: isOnline }
+        return updatedUsers
+      }
+      return prevUsers
+    })
+
+    setUserFriends((prevFriends) => {
+      const friendIndex = prevFriends.findIndex((f) => f.id === user.id)
+      if (friendIndex !== -1) {
+        const updatedFriends = [...prevFriends]
+        updatedFriends[friendIndex] = { ...updatedFriends[friendIndex], isOnline }
+        return updatedFriends
+      }
+      return prevFriends
+    })
+  }
 
   useEffect(() => {
     if (!socket) {
@@ -39,13 +64,11 @@ export const UsersProvider = ({ children }) => {
 
 
     const handleUserConnected = (user) => {
-      user.isOnline = true
-      setUsers((prevUsers) => ([ ...prevUsers, user ]))
+      updateUserOnlineStatus(user, true)
     }
-
+    
     const handleUserDisconnected = (user) => {
-      user.isOnline = false
-      setUsers((prevUsers) => ([ ...prevUsers, user ]))      
+      updateUserOnlineStatus(user, false)
     }
 
     const handleNewFriend = (newFriend) => {
