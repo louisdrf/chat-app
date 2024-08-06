@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Input, Dropdown, Menu } from 'antd';
 import Highlighter from 'react-highlight-words';
+import { HeaderSearchFoundMessage } from './HeaderSearchFoundMessage';
 
 export const SearchMessage = ({ messages }) => {
   const [searchText, setSearchText] = useState('')
@@ -30,11 +31,19 @@ export const SearchMessage = ({ messages }) => {
       {foundMessages.length > 0 ? (
         foundMessages.map((msg, index) => (
           <Menu.Item key={index}>
-            <Highlighter
-              highlightClassName="search-highlight"
-              searchWords={[searchText]}
-              autoEscape
-              textToHighlight={msg.content}
+            <HeaderSearchFoundMessage
+              user={msg.sentBy}
+              message={{
+                ...msg,
+                content: (
+                  <Highlighter
+                    highlightClassName="search-highlight"
+                    searchWords={[searchText]}
+                    autoEscape
+                    textToHighlight={msg.content}
+                  />
+                ),
+              }}
             />
           </Menu.Item>
         ))

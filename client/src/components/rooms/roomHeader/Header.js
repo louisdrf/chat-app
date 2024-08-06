@@ -5,7 +5,7 @@ import { HeaderDropdownMenu } from './HeaderDropdownMenu';
 import { RoomAvatar } from '../../RoomAvatar';
 import { SearchMessage } from './SearchMessage';
 
-const { Title } = Typography;
+const { Title } = Typography
 
 export const HeaderComponent = ({ room, roomName, onShowPinnedMessages, onShowMembersList }) => (
     <div className="headerContainer">
