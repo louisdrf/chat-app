@@ -7,12 +7,14 @@ const { Text } = Typography;
 
 export const PinnedMessage = ({ message }) => {
 
+  const isOwner = message.sentBy.username === localStorage.getItem('username')
   const formattedDate = new Date(message.sentAt).toLocaleString() 
 
   return (
     <Card
       className="message-row"
       bodyStyle={{ padding: '0' }}
+      style={{ marginBottom : '0px', width: '100%' }}
     >
       <div className="message-content">
         <div className="avatar">
@@ -22,7 +24,7 @@ export const PinnedMessage = ({ message }) => {
         <div className="message-details">
           <div className="header">
             <div className="username-date">
-              <div className="username">{message.sentBy.username}</div>
+              <div className="username">{ isOwner ? "Moi" : message.sentBy.username }</div>
               <Text className="date">
                 {formattedDate}
               </Text>

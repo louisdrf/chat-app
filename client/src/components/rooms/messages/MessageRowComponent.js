@@ -50,7 +50,7 @@ export const MessageRowComponent = ({ user, message, room }) => {
         <div className="message-details">
           <div className="header">
             <div className="username-date">
-              <div className="username">{user.username}</div>
+              <div className="username">{ isOwner ? "Moi" : user.username }</div>
               <Text className="date">
                 {formattedDate}
               </Text>

@@ -5,6 +5,8 @@ import { UserAvatar } from '../../UserAvatar';
 const { Text } = Typography
 
 export const HeaderSearchFoundMessage = ({ user, message }) => {
+
+  const isOwner = user.username === localStorage.getItem('username')
   const formattedDate = new Date(message.sentAt).toLocaleString()
   const formattedModifyDate = new Date(message.modifiedAt).toLocaleString()
 
@@ -18,7 +20,7 @@ export const HeaderSearchFoundMessage = ({ user, message }) => {
         <div className="message-details">
           <div className="header">
             <div className="username-date">
-              <div className="username">{user.username}</div>
+              <div className="username">{ isOwner ? "Moi" : user.username }</div>
               <Text className="date">{formattedDate}</Text>
             </div>
           </div>
