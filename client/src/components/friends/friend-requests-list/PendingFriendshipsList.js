@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { List, Tag, Typography } from 'antd';
 import { useFriendships } from '../../../contexts/friendshipsContext';
 import { formatTimeElapsed } from '../../../services/helpers';
@@ -7,14 +7,15 @@ const { Text } = Typography
 
 export const PendingFriendshipsList = () => {
   const { pendingFriendships } = useFriendships()
+  const [pendings, setPendings] = useState(pendingFriendships)
 
-  const pendingRequestsList = useMemo(() => {
-    return pendingFriendships || []
+  useEffect(() => {
+    setPendings(pendingFriendships)
   }, [pendingFriendships])
 
   return (
     <List
-      dataSource={pendingRequestsList}
+      dataSource={pendings}
       renderItem={friendship => (
         <List.Item>
           <div 

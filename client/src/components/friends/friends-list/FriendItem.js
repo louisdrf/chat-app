@@ -26,7 +26,7 @@ export const FriendItem = ({ user }) => {
 
   const handleDelete = () => {
     if (friendship) {
-      socket.emit('delete_friendship', friendship.id)
+      socket.emit('delete_friendship', friendship.id, localStorage.getItem("username"))
     } else {
       console.error('Aucune amitié trouvée à supprimer.')
     }
@@ -34,8 +34,8 @@ export const FriendItem = ({ user }) => {
 
   useEffect(() => {
     
-    const showDeletionSuccessNotification = () => {
-      message.info(`${user.username} ne fait plus partie de vos amis.`)
+    const showDeletionSuccessNotification = (deletedFriendshipUser) => {
+      message.info(`${deletedFriendshipUser.username} ne fait plus partie de vos amis.`)
     }
 
     socket.on('friendship_deletion_success', showDeletionSuccessNotification)

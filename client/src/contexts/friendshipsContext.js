@@ -44,17 +44,32 @@ export const FriendshipsProvider = ({ children }) => {
       setPendingFriendships((prev) => [...prev, friendship])
     }
 
-    const receiveNewFriendRequest = (receivedRequest) => { // pour celui qui reçoit la demande d'ami
+    const receiveNewFriendRequest = (receivedRequest) => {
       setReceivedFriendships((prev) => [...prev, receivedRequest])
+  
+      const key = `open${Date.now()}`
+  
+      const acceptFriendRequest = () => {
+        socket.emit('accept_friendship_request', receivedRequest.id)
+        notification.destroy(key)
+      }
+  
+      const declineFriendRequest = () => {
+        socket.emit('decline_friendship_request', receivedRequest.id)
+        notification.destroy(key)
+      }
+  
       notification.info({
         message: "Nouvelle demande d'ami",
         description: (
           <div>
             <p>{`${receivedRequest.requester.username} vous a envoyé une demande d'ami.`}</p>
-            <Button type="primary" onClick={() => socket.emit('accept_friendship_request', receivedRequest.id)}>Accepter</Button>
+            <Button danger onClick={declineFriendRequest} style={{ marginRight: '10px' }}>Refuser</Button>
+            <Button type="primary" onClick={acceptFriendRequest} style={{ marginRight: 8 }}>Accepter</Button>
           </div>
         ),
-        duration: 5
+        duration: 0, 
+        key,
       })
     }
 
@@ -76,16 +91,28 @@ export const FriendshipsProvider = ({ children }) => {
       })
     }
 
+    const deleteReceivedFriendship = (declinedFriendshipRequest) => {
+      setReceivedFriendships((prev) => prev.filter((request) => request.id !== declinedFriendshipRequest.id))
+    }
+
+    const deletePendingFriendship = (declinedFriendshipRequest)=> {
+      setPendingFriendships((prev) => prev.filter((request) => request.id !== declinedFriendshipRequest.id))
+    }
+
     socket.on('new_pending_request', sendNewFriendRequest)
     socket.on('new_friendship_request', receiveNewFriendRequest)
     socket.on('requester_request_accepted', requestAccepted)
     socket.on('requestee_accepted_the_request', acceptRequestConfirmation)
+    socket.on('friendship_decline_success', deleteReceivedFriendship)
+    socket.on('friendship_declined', deletePendingFriendship)
 
     return () => {
       socket.off('new_pending_request', sendNewFriendRequest)
       socket.off('new_friendship_request', receiveNewFriendRequest)
       socket.off('requester_request_accepted', requestAccepted)
       socket.off('requestee_accepted_the_request', acceptRequestConfirmation)
+      socket.off('friendship_decline_success', deleteReceivedFriendship)
+      socket.off('friendship_declined', deletePendingFriendship)
     }
   }, [socket])
 

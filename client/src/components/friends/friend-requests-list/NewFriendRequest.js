@@ -37,7 +37,7 @@ export const NewFriendRequest = () => {
     <div style={{ textAlign: 'center', padding: '20px' }}>
       <Title level={4}>AJOUTER</Title>
       <Text type="secondary">
-        Vous pouvez ajouter un ami grâce à leur nom d'utilisateur.
+        Vous pouvez ajouter un ami grâce à son nom d'utilisateur.
       </Text>
       <Input
         placeholder="Entrez le nom d'utilisateur de votre ami..."

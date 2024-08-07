@@ -1,26 +1,31 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { List, Button, Typography } from 'antd';
 import { useFriendships } from '../../../contexts/friendshipsContext';
 import { useSocket } from '../../../contexts/socketContext';
 import { formatTimeElapsed } from '../../../services/helpers';
 
-const { Text } = Typography;
+const { Text } = Typography
 
 export const ReceivedFriendshipsList = () => {
-  const { receivedFriendships } = useFriendships();
-  const {socket} = useSocket();
+  const { receivedFriendships } = useFriendships()
+  const { socket }  = useSocket()
+  const [received, setReceived] = useState(receivedFriendships)
 
   const handleAcceptRequest = (friendshipId) => {
     socket.emit('accept_friendship_request', friendshipId)
   }
 
-  const receivedRequestsList = useMemo(() => {
-    return receivedFriendships || []
+  const handleDeclineRequest = (friendshipId) => {
+    socket.emit('decline_friendship_request', friendshipId)
+  }
+
+  useEffect(() => {
+    setReceived(receivedFriendships)
   }, [receivedFriendships])
 
   return (
     <List
-      dataSource={receivedRequestsList}
+      dataSource={received}
       renderItem={(friendship) => (
         <List.Item
           style={{
@@ -43,6 +48,12 @@ export const ReceivedFriendshipsList = () => {
             </div>
           </div>
           <div>
+          <Button danger
+              onClick={() => handleDeclineRequest(friendship.id)}
+              style={{ marginRight: '10px' }}
+            >
+              Refuser
+            </Button>
             <Button
               type="primary"
               onClick={() => handleAcceptRequest(friendship.id)}
@@ -54,5 +65,5 @@ export const ReceivedFriendshipsList = () => {
         </List.Item>
       )}
     />
-  );
-};
+  )
+}

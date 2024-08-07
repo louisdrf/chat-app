@@ -78,28 +78,52 @@ export const friendshipRequestsController = (socket: Socket) => {
   })
 
 
-  socket.on('delete_friendship', async (friendshipId: number) => {
+  socket.on('delete_friendship', async (friendshipId: number, deleterName : string) => {
     try {
-      const friendship = await friendshipRepo.findOne({ where: { id: friendshipId }, relations: ["requester", "requestee"] });
+      const friendship = await friendshipRepo.findOne({ where: { id: friendshipId }, relations: ["requester", "requestee"] })
 
       if (!friendship) {
         return socket.emit('friendship_deletion_error', { error: 'Demande d\'ami non trouvée.' });
       }
 
-      const deletedFriendship = await friendshipRepo.remove(friendship)
-      
-      // envoi à celui qui avait envoyé la demande
-      if (friendship.requester.socketId) {      
-        socket.emit('friendship_deletion_success', deletedFriendship) // lui indiquer que la suppression a bien été effectuée
-        socket.emit('delete_friend', friendship.requestee) // lui indiquer que son ami a été supprimé
-        if (friendship.requestee.socketId) {   
-          socket.to(friendship.requestee.socketId).emit('delete_friend', friendship.requester) // indiquer a son ami qu'ils ne le sont plus
-        }
+      const isRequester : boolean = (friendship.requester.username === deleterName) // est ce que celui qui supprime est aussi celui qui a fait la demande
+
+      await friendshipRepo.remove(friendship)
+
+      socket.emit('friendship_deletion_success', 
+        isRequester ? friendship.requestee : friendship.requester
+      ) // message de succès à celui qui supprime
+
+      if(isRequester && friendship.requester.socketId) { // si il s'agit de celui qui avait fait la demande et qu'il est connecté
+        socket.emit('delete_friend', friendship.requestee) // on lui envoie l'ami supprimé
+      }
+      if(friendship.requestee.socketId) {
+        socket.to(friendship.requestee.socketId).emit('delete_friend', friendship.requester) // si l'autre est connecté, on lui envoie celui qui a supprimé l'amitié
       }
 
     } catch (error) {
       console.error("Une erreur est survenue pendant la suppression de la demande d'ami :", error);
-      socket.emit('friendship_acceptance_error', { error: "Une erreur interne est survenue. Réessayez plus tard." });
+      socket.emit('friendship_deletion_error', { error: "Une erreur interne est survenue. Réessayez plus tard." });
+    }
+  })
+
+  socket.on('decline_friendship_request', async (friendshipId: number) => {
+    try {
+      const friendship = await friendshipRepo.findOne({ where: { id: friendshipId }, relations: ["requester", "requestee"] })
+
+      if (!friendship) {
+        return socket.emit('friendship_decline_error', { error: 'Demande d\'ami non trouvée.' });
+      }
+
+      const declinedFriendship = await friendshipRepo.remove(friendship)
+      declinedFriendship.id = friendshipId
+      
+      socket.emit('friendship_decline_success', declinedFriendship) // message de succès à celui qui decline
+      socket.to(friendship.requester.socketId).emit('friendship_declined', declinedFriendship) // socket event à celui qui avait sa demande en attente
+
+    } catch (error) {
+      console.error("Une erreur est survenue pendant le refus de la demande d'ami :", error);
+      socket.emit('friendship_decline_error', { error: "Une erreur interne est survenue. Réessayez plus tard." });
     }
   })
 }
