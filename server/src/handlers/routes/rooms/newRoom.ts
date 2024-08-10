@@ -27,13 +27,14 @@ export const newRoomRoute = (app: express.Express) => {
                 return
             }
 
+            const targetUser = await userRepo.findOne({ where: { username: targetUsername } })
+            if (!targetUser) {
+                res.status(400).send({ error: "L'utilisateur cible n'a pas été trouvé." })
+                return
+            }
+
             if (isPrivate) {
                 // on regarde si il n'y a pas déjà une conversation privée entre les deux
-                const targetUser = await userRepo.findOne({ where: { username: targetUsername } })
-                if (!targetUser) {
-                    res.status(400).send({ error: "L'utilisateur cible n'a pas été trouvé." })
-                    return
-                }
                 
                 const existingRooms = await roomRepo.find({ where : { isPrivate : true }, relations : ['users', 'messages'] })
                 if(existingRooms.length > 0) {
@@ -48,6 +49,7 @@ export const newRoomRoute = (app: express.Express) => {
                 }  
             }
 
+            // créer la room
             const roomToCreate = roomRepo.create({
                 name: targetUsername,
                 createdAt: new Date(),
@@ -56,6 +58,11 @@ export const newRoomRoute = (app: express.Express) => {
                 users: [creator]
             })
 
+            const room = await roomRepo.save(roomToCreate)
+            room.messages = []
+
+
+            // créer les instances de table de jointure pour les deux utilisateurs
             const linkedUserRoom = userRoomRepo.create({
                 user : creator,
                 room : roomToCreate,
@@ -63,10 +70,19 @@ export const newRoomRoute = (app: express.Express) => {
                 lastVisitedAt : new Date()
             })
 
-            const room = await roomRepo.save(roomToCreate)
-            room.messages = []
-
             await userRoomRepo.save(linkedUserRoom)
+
+
+            if (targetUser) {
+                const targetUserRoom = userRoomRepo.create({
+                    user: targetUser,
+                    room: room,
+                    unreadMessagesCount: 0,
+                    lastVisitedAt: new Date()
+                })
+
+                await userRoomRepo.save(targetUserRoom)
+            }
 
             res.status(201).send({
                 message: "La conversation a bien été créée.",

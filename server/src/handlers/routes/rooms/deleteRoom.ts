@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import { AppDataSource } from "../../../database/database";
 import { Room } from "../../../database/entities/room";
 import { Message } from "../../../database/entities/message";
+import { UserRoom } from "../../../database/entities/userRoom";
 
 
 export const deleteRoomRoute = (app: express.Express) => {
@@ -11,6 +12,7 @@ export const deleteRoomRoute = (app: express.Express) => {
         try {
             const roomRepo = AppDataSource.getRepository(Room)
             const messageRepo = AppDataSource.getRepository(Message)
+            const userRoomRepo = AppDataSource.getRepository(UserRoom)
 
             const room = await roomRepo.findOne({ where: { id: parseInt(roomId) } })
             if(!room) {
@@ -18,6 +20,8 @@ export const deleteRoomRoute = (app: express.Express) => {
             }
 
             await messageRepo.delete({ room: { id: parseInt(roomId) } })
+
+            await userRoomRepo.delete({ room : room })
 
             const deletedRoom = await roomRepo.remove(room)
 

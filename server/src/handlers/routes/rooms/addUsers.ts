@@ -5,6 +5,7 @@ import { User } from "../../../database/entities/user";
 import { addMembersToRoomValidation } from "../../validators/rooms/add-members-validator";
 import { In } from "typeorm";
 import { generateValidationErrorMessage } from "../../validators/validation-message";
+import { UserRoom } from "../../../database/entities/userRoom";
 
 export const addMembersToRoomRoute = (app: express.Express) => {
     app.post('/rooms/:roomId', async (req: Request, res: Response) => {
@@ -22,6 +23,7 @@ export const addMembersToRoomRoute = (app: express.Express) => {
         try {
             const roomRepository = AppDataSource.getRepository(Room)
             const userRepository = AppDataSource.getRepository(User)
+            const userRoomRepo = AppDataSource.getRepository(UserRoom)
     
             const room = await roomRepository.findOne({
                 where: { id: parseInt(roomId) },
@@ -42,6 +44,18 @@ export const addMembersToRoomRoute = (app: express.Express) => {
             if (filteredUsersToAdd.length > 0) {
                 room.users = [...room.users, ...filteredUsersToAdd]
                 await roomRepository.save(room)
+            }
+
+            // créer l'entité de jointure entre chaque utilisateur et la room
+            for(const user of filteredUsersToAdd) {
+                const linkedUserRoom = userRoomRepo.create({
+                    user : user,
+                    room : room,
+                    unreadMessagesCount : 0,
+                    lastVisitedAt : new Date()
+                })
+
+                await userRoomRepo.save(linkedUserRoom)
             }
 
             room.messages = []
