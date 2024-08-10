@@ -3,6 +3,7 @@ import { Token } from "./token";
 import { Message } from "./message";
 import { Room } from "./room";
 import { Friendship } from "./friendship";
+import { UserRoom } from "./userRoom";
 
 @Entity()
 export class User {
@@ -42,6 +43,9 @@ export class User {
 
   @OneToMany(() => Friendship, friendship => friendship.requestee, { onDelete: 'CASCADE' })
   receivedFriendRequests!: Friendship[]
+
+  @OneToMany(() => UserRoom, userRoom => userRoom.user)
+  userRooms!: UserRoom[]
 
 
   constructor(username: string, email: string, password: string, token : Token, uid: string) {

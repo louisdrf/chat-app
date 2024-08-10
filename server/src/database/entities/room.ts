@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany, JoinTable, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from './user';
 import { Message } from './message';
+import { UserRoom } from './userRoom';
 
 @Entity()
 export class Room {
@@ -26,6 +27,9 @@ export class Room {
 
     @Column({ default: false })
     isPrivate: boolean; 
+
+    @OneToMany(() => UserRoom, userRoom => userRoom.room)
+    userRooms!: UserRoom[]
 
     constructor(name: string, createdAt: Date, createdBy: User, isPrivate: boolean = false, users : User[]) {
         this.name = name;

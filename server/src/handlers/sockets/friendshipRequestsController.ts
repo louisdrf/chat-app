@@ -44,7 +44,7 @@ export const friendshipRequestsController = (socket: Socket) => {
       console.error("Une erreur est survenue pendant l'envoi de la demande d'ami :", error);
       socket.emit('friendship_request_error', { error: "Une erreur interne est survenue. Réessayez plus tard." });
     }
-  });
+  })
 
   socket.on('accept_friendship_request', async (friendshipId: number) => {
     try {
