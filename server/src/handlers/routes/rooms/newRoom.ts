@@ -4,6 +4,7 @@ import { generateValidationErrorMessage } from "../../validators/validation-mess
 import { roomValidation } from "../../validators/rooms/new-room-validator";
 import { User } from "../../../database/entities/user";
 import { Room } from "../../../database/entities/room";
+import { UserRoom } from "../../../database/entities/userRoom";
 
 export const newRoomRoute = (app: express.Express) => {
     app.post('/rooms', async (req: Request, res: Response) => {
@@ -16,6 +17,7 @@ export const newRoomRoute = (app: express.Express) => {
 
             const userRepo = AppDataSource.getRepository(User)
             const roomRepo = AppDataSource.getRepository(Room)
+            const userRoomRepo = AppDataSource.getRepository(UserRoom)
 
             const { name: targetUsername, createdBy: creatorUsername, isPrivate } = validation.value
 
@@ -54,8 +56,17 @@ export const newRoomRoute = (app: express.Express) => {
                 users: [creator]
             })
 
+            const linkedUserRoom = userRoomRepo.create({
+                user : creator,
+                room : roomToCreate,
+                unreadMessagesCount : 0,
+                lastVisitedAt : new Date()
+            })
+
             const room = await roomRepo.save(roomToCreate)
             room.messages = []
+
+            await userRoomRepo.save(linkedUserRoom)
 
             res.status(201).send({
                 message: "La conversation a bien été créée.",
