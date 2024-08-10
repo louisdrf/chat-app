@@ -5,29 +5,31 @@ import { useSocket } from '../../../contexts/socketContext';
 import { PinnedMessagesModal } from './PinnedMessagesModal';
 import { HeaderComponent } from './Header';
 import { RoomMembersModal } from './MembersListModal';
+import { useRooms } from '../../../contexts/roomsContext';
 
 
-export const CurrentConversationHeader = ({ name, room }) => {
+export const CurrentConversationHeader = () => {
   const {socket} = useSocket()
+  const { activeRoom } = useRooms()
 
   // show pinned messages
-  const [pinnedMessages, setPinnedMessages] = useState(room.messages.filter(m => m.isPinned))
+  const [pinnedMessages, setPinnedMessages] = useState(activeRoom.messages.filter(m => m.isPinned))
   const [isPinnedMessagesModalVisible, setIsPinnedMessagesModalVisible] = useState(false)
   const showPinnedMessages = () => setIsPinnedMessagesModalVisible(true)
   const handlePinnedMessagesModalCancel = () => setIsPinnedMessagesModalVisible(false)
   
   // show members list
-  const [roomMembers, setRoomMembers] = useState(room.users)
+  const [roomMembers, setRoomMembers] = useState(activeRoom.users)
   const [isMembersListModalVisible, setIsMembersListModalVisible] = useState(false)
   const showMembersList = () => setIsMembersListModalVisible(true)
   const handleMembersListModalCancel = () => setIsMembersListModalVisible(false)
 
   useEffect(() => {
 
-    setPinnedMessages(room.messages.filter(m => m.isPinned))
+    setPinnedMessages(activeRoom.messages.filter(m => m.isPinned))
     
     const handlePinnedMessage = (roomWithPinnedMessage) => {
-      if (roomWithPinnedMessage.id === room.id) {
+      if (roomWithPinnedMessage.id === activeRoom.id) {
         setPinnedMessages(roomWithPinnedMessage.messages.filter(m => m.isPinned))
       }
     }
@@ -36,19 +38,17 @@ export const CurrentConversationHeader = ({ name, room }) => {
 
     return () => socket.off('message_pinned', handlePinnedMessage)
     
-  }, [room, socket])
+  }, [activeRoom, socket])
 
 
   useEffect(() => {
-    setRoomMembers(room.users)
-  }, [room])
+    setRoomMembers(activeRoom.users)
+  }, [activeRoom])
 
 
   return (
     <div>
       <HeaderComponent 
-        room={room} 
-        roomName={name} 
         onShowPinnedMessages={showPinnedMessages} 
         onShowMembersList={showMembersList}
       />

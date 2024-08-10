@@ -6,43 +6,24 @@ import { createRoom } from '../services/roomsServices';
 import { CurrentConversationHeader } from '../components/rooms/roomHeader/CurrentConversationHeader';
 import { InputMessageComponent } from '../components/rooms/InputMessageComponent';
 import { PublicRoomsNavbar } from '../components/PublicRoomsNavbar';
+import { useRooms } from '../contexts/roomsContext';
 
 const { Header, Content } = Layout;
 
 export const Home = () => {
-    const [activeRoom, setActiveRoom] = useState(null);
-    const [activeRoomName, setActiveRoomName] = useState("")
 
-    const onPrivateConversationClick = async (roomName) => {
-        try {
-            const room = await createRoom(roomName, true)
-            setActiveRoom(room)
-            setActiveRoomName(roomName)
-        } catch (error) {
-            console.error("Erreur lors de la création ou la récupération de la room privée :", error);
-        }
-    }
-
-    const onPublicConversationClick = async (room) => {
-        try {
-            setActiveRoom(room)
-            setActiveRoomName(room.name)
-        } catch (error) {
-            console.error("Erreur lors de la création ou la récupération de la room privée :", error);
-        }
-    }
-
+    const { activeRoom } = useRooms()
 
     return (
             <Layout style={{ minHeight: '100vh' }}>
-                    <PublicRoomsNavbar onConversationClick={onPublicConversationClick} />
+                    <PublicRoomsNavbar />
                         <Layout style={{ minHeight: '100vh' }}>
-                            <Navbar onConversationClick={onPrivateConversationClick} />
+                            <Navbar />
                                 <Layout style={{ flex: 1 }}>
                                     <Header style={{ padding: 0, backgroundColor: '#fff' }}>
                                         {activeRoom && (
                                             <div>
-                                                <CurrentConversationHeader name={activeRoomName} room={activeRoom} />
+                                                <CurrentConversationHeader />
                                             </div>
                                         )}
                                     </Header>

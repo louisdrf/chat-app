@@ -8,6 +8,7 @@ import { Home } from './pages/Home';
 import { Auth } from './pages/Auth';
 import { UsersProvider } from './contexts/usersContext';
 import { FriendshipsProvider } from './contexts/friendshipsContext';
+import { RoomsProvider } from './contexts/roomsContext';
 
 const router = createBrowserRouter([
   {
@@ -32,7 +33,9 @@ root.render(
     <SocketProvider>
       <UsersProvider>
         <FriendshipsProvider>
-          <RouterProvider router={router} />
+          <RoomsProvider>
+            <RouterProvider router={router} />
+          </RoomsProvider>
         </FriendshipsProvider>
       </UsersProvider>
     </SocketProvider>

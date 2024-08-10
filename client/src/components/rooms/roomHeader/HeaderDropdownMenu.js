@@ -1,9 +1,12 @@
 // src/components/MessageOptionsDropdown.js
-import React, { useState } from 'react';
+import React from 'react';
 import { Dropdown, Button } from 'antd';
 import { MoreOutlined, PushpinOutlined, TeamOutlined } from '@ant-design/icons';
+import { useRooms } from '../../../contexts/roomsContext';
 
-export const HeaderDropdownMenu = ({ onShowPinnedMessages, onShowMembersList, room }) => {
+export const HeaderDropdownMenu = ({ onShowPinnedMessages, onShowMembersList }) => {
+
+    const { activeRoom } = useRooms()
     
     const items = [
         {
@@ -12,7 +15,7 @@ export const HeaderDropdownMenu = ({ onShowPinnedMessages, onShowMembersList, ro
             icon: <PushpinOutlined />,
             onClick: onShowPinnedMessages
         },
-        !room.isPrivate && {
+        !activeRoom.isPrivate && {
             label: 'Liste des membres',
             key: '2',
             icon: <TeamOutlined />, 
@@ -28,5 +31,5 @@ export const HeaderDropdownMenu = ({ onShowPinnedMessages, onShowMembersList, ro
                 style={{ marginLeft: 'auto' }}
             />
         </Dropdown>
-    );
-};
+    )
+}

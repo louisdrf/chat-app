@@ -3,13 +3,14 @@ import { Menu, Layout } from 'antd';
 import { UserAvatar } from './UserAvatar'
 import { TeamOutlined } from '@ant-design/icons'
 import { FriendsModal } from './friends/FriendsModal';
-import { useUsers } from '../contexts/usersContext';
+import { useRooms } from '../contexts/roomsContext';
 
 const { Sider } = Layout
 
-export const Navbar = ({ onConversationClick }) => {
-  const { userFriends } = useUsers()
-  const [friends, setFriends] = useState(userFriends)
+export const Navbar = () => {
+  const { privateRooms, onPrivateConversationClick } = useRooms()
+
+  const [rooms, setRooms] = useState(privateRooms)
   const [isFriendsModalVisible, setIsFriendsModalVisible] = useState(false)
 
   const showFriendsModal = () => setIsFriendsModalVisible(true)
@@ -17,23 +18,23 @@ export const Navbar = ({ onConversationClick }) => {
 
 
   useEffect(() => {
-      setFriends(userFriends)
-  }, [userFriends])
+      setRooms(privateRooms)
+  }, [privateRooms])
 
-  const friendsListItems = [
+  const friendsRoomListItems = [
     {
       key: 'friends',
       icon: <TeamOutlined />,
       label: 'Amis',
       onClick: () => showFriendsModal()
     },
-    ...friends.map(user => ({
+    ...rooms.map(user => ({
       key: user.id.toString(),
       icon: <UserAvatar user={user} size={24} />, 
       label: (
         <span style={{ marginLeft: 10 }}>{user.username}</span>
       ),
-      onClick: () => onConversationClick(user.username)
+      onClick: () => onPrivateConversationClick(user.username)
     }))
   ]
 
@@ -42,7 +43,7 @@ export const Navbar = ({ onConversationClick }) => {
             <Menu
             style={{ height: '100vh'}}
               theme='light'
-              items={friendsListItems}
+              items={friendsRoomListItems}
             />
             <FriendsModal visible={isFriendsModalVisible} onCancel={hideFriendsModal}/>
           </Sider>
