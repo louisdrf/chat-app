@@ -54,8 +54,9 @@ export const addMembersToRoom = async(roomId, membersName) => {
 
 
 
-export const getUserPublicRooms = async(username) => {
+export const getUserPublicRooms = async() => {
     try {
+        const username = localStorage.getItem("username")
         const response = await api.get(`/rooms/public/${username}`)
         return response.data.rooms
     }

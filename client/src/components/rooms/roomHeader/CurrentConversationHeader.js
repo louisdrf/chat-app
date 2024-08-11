@@ -9,7 +9,7 @@ import { useRooms } from '../../../contexts/roomsContext';
 
 
 export const CurrentConversationHeader = () => {
-  const {socket} = useSocket()
+  const { socket } = useSocket()
   const { activeRoom } = useRooms()
 
   // show pinned messages
@@ -25,6 +25,10 @@ export const CurrentConversationHeader = () => {
   const handleMembersListModalCancel = () => setIsMembersListModalVisible(false)
 
   useEffect(() => {
+    if (!socket) {
+      console.error('Socket instance is not available')
+      return
+    }
 
     setPinnedMessages(activeRoom.messages.filter(m => m.isPinned))
     

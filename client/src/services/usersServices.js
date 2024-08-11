@@ -1,5 +1,23 @@
 import api from '../axiosConfig'
 
+
+export const getUserByName = async () => {
+    try {
+        const username = localStorage.getItem("username")
+        const response = await api.get(`/users/${username}`)
+        return response.data.user
+      }
+      catch (error) {
+        if (error.response) {
+            console.log('erreur serveur : ' , error.response.data);
+            throw new Error(error.response.data.error)
+        } else {
+            throw new Error('Erreur réseau ou serveur.')
+        }
+    }
+}
+
+
 export const getAllUsers = async () => {
     try {
         const response = await api.get('/users')

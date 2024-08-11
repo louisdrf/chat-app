@@ -2,11 +2,12 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useSocket } from './socketContext';
 import { createRoom, getUserPublicRooms } from '../services/roomsServices';
 import { useUsers } from './usersContext';
+import { getUserByName } from '../services/usersServices';
 
 const RoomContext = createContext(null)
 
 export const RoomsProvider = ({ children }) => {
-  const {socket} = useSocket()
+  const { socket } = useSocket()
   const { userFriends } = useUsers()
 
   const [activeRoom, setActiveRoom] = useState(null)
@@ -19,12 +20,12 @@ export const RoomsProvider = ({ children }) => {
 
     const createPrivateRoom = async (friend) => {
         try {
-        const room = await createRoom(friend.username, true)
-        room.user = friend
-        return room
+            const room = await createRoom(friend.username, true)
+            room.user = friend
+            return room
         } catch (error) {
-        console.error(`Erreur lors de la création de la room privée pour ${friend.username} :`, error);
-        return null
+            console.error(`Erreur lors de la création de la room privée pour ${friend.username} :`, error);
+            return null
         }
     }
 
@@ -107,6 +108,28 @@ export const RoomsProvider = ({ children }) => {
 
     useEffect(() => {
         // INITIALISATION DES DONNEES
+        const setInitialActiveRoom = async () => {
+            try {
+                const user = await getUserByName()
+                console.log('init active room : ', user)
+                
+                setActiveRoom(user.currentRoom)
+
+                if(user.currentRoom.isPrivate) { // afficher le bon nom pour la room
+                    const currentUsername = localStorage.getItem("username")
+                    if(currentUsername === user.currentRoom.name) {
+                        setActiveRoomName(user.currentRoom.createdBy.username)
+                    }
+                    else setActiveRoomName(user.currentRoom.name)
+                }
+                else setActiveRoomName(user.currentRoom.name)
+                
+            } catch (error) {
+                console.error('Failed to fetch initial user current room', error)
+            }
+        }
+
+
         const setInitialPublicRooms = async () => {
             try {
                 const userPublicRooms = await getUserPublicRooms()
@@ -133,6 +156,7 @@ export const RoomsProvider = ({ children }) => {
             }
         }
 
+        setInitialActiveRoom()
         setInitialPublicRooms()
         setInitialPrivateRooms()
 

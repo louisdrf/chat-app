@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Layout } from 'antd';
 import { ConversationComponent } from '../components/rooms/ConversationComponent';
 import { Navbar } from '../components/Navbar';
-import { createRoom } from '../services/roomsServices';
 import { CurrentConversationHeader } from '../components/rooms/roomHeader/CurrentConversationHeader';
 import { InputMessageComponent } from '../components/rooms/InputMessageComponent';
 import { PublicRoomsNavbar } from '../components/PublicRoomsNavbar';
