@@ -51,8 +51,8 @@ export const addMembersToRoomRoute = (app: express.Express) => {
                 const linkedUserRoom = userRoomRepo.create({
                     user : user,
                     room : room,
-                    unreadMessagesCount : 0,
-                    lastVisitedAt : new Date()
+                    lastVisitedAt : new Date(),
+                    unreadMessages : []
                 })
 
                 await userRoomRepo.save(linkedUserRoom)

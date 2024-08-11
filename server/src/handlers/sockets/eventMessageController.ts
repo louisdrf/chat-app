@@ -37,8 +37,8 @@ export const eventMessageController = (socket: Socket) => {
             })
 
             if (userRoom) {
-                // Réinitialise le compteur de messages non lus à 0 et met à jour la dernière visite
-                userRoom.unreadMessagesCount = 0
+                // Réinitialise la liste des messages non lus et met à jour la dernière visite
+                userRoom.unreadMessages = []
                 userRoom.lastVisitedAt = new Date()
                 await userRoomRepository.save(userRoom)
             }
@@ -50,49 +50,79 @@ export const eventMessageController = (socket: Socket) => {
         }
     })
 
-    socket.on('send_message', async (data: { content: string; senderUsername: string, roomId : number}) => {
-        try {            
+    socket.on('send_message', async (data: { content: string; senderUsername: string; roomId: number }) => {
+        try {
             const { content, senderUsername, roomId } = data
-
-            const sender = await userRepository.findOneBy({ username : senderUsername})
+    
+            // Trouver l'expéditeur
+            const sender = await userRepository.findOneBy({ username: senderUsername })
             if (!sender) {
-                console.error(`Utilisateur ${sender} non trouvé.`)
+                console.error(`Utilisateur ${senderUsername} non trouvé.`)
                 return
             }
-
-            const room = await roomRepository.findOneBy({ id : roomId})
-            if(!room) {
+    
+            // Trouver la room
+            const room = await roomRepository.findOneBy({ id: roomId })
+            if (!room) {
                 console.error(`Room ${roomId} non trouvée.`)
                 return
             }
-
-            // Créer un nouveau message
+    
+            // Créer et sauvegarder un nouveau message
             const message = new Message(content, new Date(), sender, room)
             await messageRepository.save(message)
-
-            // Incrémenter le nombre de messages non lus
+    
+            // Ajouter le message aux messages non lus pour les utilisateurs concernés
             if (room.isPrivate) {
-                // Pour une room privée, on incrémente le compteur pour l'autre utilisateur
-                const otherUser = room.users.find(user => user.id !== sender.id)
+                // Pour une room privée, on ajoute le message à la liste des non lus pour l'autre utilisateur
+                const otherUser = room.users.find(user => user.id !== sender.id);
                 if (otherUser && otherUser.socketId && otherUser.currentRoom?.id !== roomId) {
-                    await userRoomRepository.increment({ user: otherUser, room }, 'unreadMessagesCount', 1)
+                    const userRoom = await userRoomRepository.findOne({
+                        where: {
+                            user: { id: otherUser.id },
+                            room: { id: roomId },
+                        },
+                        relations: ['unreadMessages']
+                    })
+    
+                    if (userRoom) {
+                        if (!userRoom.unreadMessages.find(msg => msg.id === message.id)) {
+                            userRoom.unreadMessages.push(message)
+                            await userRoomRepository.save(userRoom)
+                        }
+                    }
                 }
             } else {
-                // Pour une room publique, on incrémente le compteur pour tous les utilisateurs sauf le sender
+                // Pour une room publique, on ajoute le message à la liste des non lus pour tous les utilisateurs sauf l'expéditeur
                 for (const user of room.users) {
                     if (user.id !== sender.id && user.socketId && user.currentRoom?.id !== roomId) {
-                        await userRoomRepository.increment({ user, room }, 'unreadMessagesCount', 1)
+                        const userRoom = await userRoomRepository.findOne({
+                            where: {
+                                user: { id: user.id },
+                                room: { id: roomId },
+                            },
+                            relations: ['unreadMessages']
+                        });
+    
+                        if (userRoom) {
+                            if (!userRoom.unreadMessages.find(msg => msg.id === message.id)) {
+                                userRoom.unreadMessages.push(message)
+                                await userRoomRepository.save(userRoom)
+                            }
+                        }
                     }
                 }
             }
-
+    
+            // Émettre le message aux clients dans la room
             socket.in(`room_${roomId}`).emit('receive_message', message)
             socket.emit('receive_message', message)
-            
+    
         } catch (error) {
-            console.error('Erreur lors de l\'enregistrement du message:', error);
+            console.error('Erreur lors de l\'enregistrement du message:', error)
         }
     })
+    
 
 
     socket.on('delete_message', async(messageId, roomId) => {

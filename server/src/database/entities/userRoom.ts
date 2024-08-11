@@ -1,6 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, JoinTable, ManyToMany } from 'typeorm';
 import { User } from './user';
 import { Room } from './room';
+import { Message } from './message';
 
 @Entity()
 export class UserRoom {
@@ -15,17 +16,29 @@ export class UserRoom {
   @JoinColumn({ name: 'room_id' })
   room: Room
 
-  @Column({ default: 0 })
-  unreadMessagesCount: number
+
+  @ManyToMany(() => Message)
+  @JoinTable({
+    name: 'unread_messages',
+    joinColumn: {
+      name: 'user_room_id',
+      referencedColumnName: 'id'
+    },
+    inverseJoinColumn: {
+      name: 'message_id',
+      referencedColumnName: 'id'
+    }
+  })
+  unreadMessages: Message[]
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   lastVisitedAt: Date
 
 
-  constructor(user: User, room: Room, unreadMessagesCount: number, lastVisitedAt: Date) {
-    this.unreadMessagesCount = unreadMessagesCount
+  constructor(user: User, room: Room, lastVisitedAt: Date, unreadMessages : Message[]) {
     this.user = user
     this.room = room
     this.lastVisitedAt = lastVisitedAt
+    this.unreadMessages = unreadMessages
   }
 }
