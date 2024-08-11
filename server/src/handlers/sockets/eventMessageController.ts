@@ -29,6 +29,20 @@ export const eventMessageController = (socket: Socket) => {
             user.currentRoom = room
             await userRepository.save(user)
 
+            const userRoom = await userRoomRepository.findOne({
+                where: {
+                    user: { id: user.id },
+                    room: { id: roomId },
+                }
+            })
+
+            if (userRoom) {
+                // Réinitialise le compteur de messages non lus à 0 et met à jour la dernière visite
+                userRoom.unreadMessagesCount = 0
+                userRoom.lastVisitedAt = new Date()
+                await userRoomRepository.save(userRoom)
+            }
+
             socket.join(`room_${roomId}`)
 
         } catch (error) {
@@ -60,13 +74,13 @@ export const eventMessageController = (socket: Socket) => {
             if (room.isPrivate) {
                 // Pour une room privée, on incrémente le compteur pour l'autre utilisateur
                 const otherUser = room.users.find(user => user.id !== sender.id)
-                if (otherUser) {
+                if (otherUser && otherUser.socketId && otherUser.currentRoom?.id !== roomId) {
                     await userRoomRepository.increment({ user: otherUser, room }, 'unreadMessagesCount', 1)
                 }
             } else {
                 // Pour une room publique, on incrémente le compteur pour tous les utilisateurs sauf le sender
                 for (const user of room.users) {
-                    if (user.id !== sender.id) {
+                    if (user.id !== sender.id && user.socketId && user.currentRoom?.id !== roomId) {
                         await userRoomRepository.increment({ user, room }, 'unreadMessagesCount', 1)
                     }
                 }

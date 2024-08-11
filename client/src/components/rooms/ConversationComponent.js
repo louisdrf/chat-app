@@ -11,7 +11,9 @@ export const ConversationComponent = ({ room }) => {
   useEffect(() => {
     if (!socket) return
 
-    socket.emit('join_room', room.id)
+    const currentUsername = localStorage.getItem("username")
+
+    socket.emit('join_room', room.id, currentUsername)
 
     const handleReceiveMessage = (message) => setMessages(prevMessages => [...prevMessages, message])
     const handleDeleteMessage = (messageId) => setMessages(prevMessages => prevMessages.filter(message => message.id !== messageId))
@@ -30,7 +32,6 @@ export const ConversationComponent = ({ room }) => {
       socket.off('receive_message', handleReceiveMessage)
       socket.off('message_deleted', handleDeleteMessage)
       socket.off('message_modified', handleModifyMessage)
-      socket.emit('leave_room', room.id)
     }
   }, [socket, room])
 

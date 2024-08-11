@@ -41,9 +41,11 @@ export const RoomsProvider = ({ children }) => {
     }
 
 
+    
     useEffect(() => {
         setPrivateRooms(userFriends)
     }, [userFriends])
+
 
     useEffect(() => {
         if (!socket) {
@@ -55,6 +57,8 @@ export const RoomsProvider = ({ children }) => {
         const setInitialPublicRooms = async () => {
             try {
                 const userPublicRooms = await getUserPublicRooms()
+                console.log('init public rooms');
+                
                 setPublicRooms(userPublicRooms)
             } catch (error) {
                 console.error('Failed to fetch initial user public rooms', error)
