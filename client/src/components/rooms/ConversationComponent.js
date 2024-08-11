@@ -1,5 +1,3 @@
-// src/components/ConversationComponent.js
-
 import React, { useState, useEffect } from 'react';
 import { useSocket } from '../../contexts/socketContext'; 
 import { MessageRowComponent } from './messages/MessageRowComponent';

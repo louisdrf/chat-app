@@ -44,6 +44,7 @@ export const eventMessageController = (socket: Socket) => {
             }
 
             socket.join(`room_${roomId}`)
+            socket.emit('new_unread_message', roomId, [])
 
         } catch (error) {
             console.error('Erreur lors de la jonction de la room:', error)
@@ -75,7 +76,7 @@ export const eventMessageController = (socket: Socket) => {
             // Ajouter le message aux messages non lus pour les utilisateurs concernés
             if (room.isPrivate) {
                 // Pour une room privée, on ajoute le message à la liste des non lus pour l'autre utilisateur
-                const otherUser = room.users.find(user => user.id !== sender.id);
+                const otherUser = room.users.find(user => user.id !== sender.id)
                 if (otherUser && otherUser.socketId && otherUser.currentRoom?.id !== roomId) {
                     const userRoom = await userRoomRepository.findOne({
                         where: {
@@ -89,6 +90,7 @@ export const eventMessageController = (socket: Socket) => {
                         if (!userRoom.unreadMessages.find(msg => msg.id === message.id)) {
                             userRoom.unreadMessages.push(message)
                             await userRoomRepository.save(userRoom)
+                            socket.to(otherUser.socketId).emit('new_unread_message', roomId, message)
                         }
                     }
                 }
@@ -102,12 +104,13 @@ export const eventMessageController = (socket: Socket) => {
                                 room: { id: roomId },
                             },
                             relations: ['unreadMessages']
-                        });
+                        })
     
                         if (userRoom) {
                             if (!userRoom.unreadMessages.find(msg => msg.id === message.id)) {
                                 userRoom.unreadMessages.push(message)
                                 await userRoomRepository.save(userRoom)
+                                socket.to(user.socketId).emit('new_unread_message', roomId, message)
                             }
                         }
                     }

@@ -13,6 +13,7 @@ export const RoomsProvider = ({ children }) => {
   const [activeRoomName, setActiveRoomName] = useState("")
   const [privateRooms, setPrivateRooms] = useState(userFriends)
   const [publicRooms, setPublicRooms] = useState([])
+  const [unreadMessages, setUnreadMessages] = useState([])
 
   // FONCTIONS UTILITAIRES
     const onPrivateConversationClick = async (roomName) => {
@@ -41,6 +42,26 @@ export const RoomsProvider = ({ children }) => {
     }
 
 
+    const handleIncomingUnreadMessage = (roomId, newMessage) => {
+        setUnreadMessages(prevUnreadMessages => {
+            const updatedUnreadMessages = { ...prevUnreadMessages }
+    
+            if (!updatedUnreadMessages[roomId]) {
+                updatedUnreadMessages[roomId] = []
+            }
+    
+            // Vérifie si le nouveau message est déjà présent dans la liste des messages non lus pour cette room
+            const isMessageAlreadyInList = updatedUnreadMessages[roomId].some(existingMessage => existingMessage.id === newMessage.id)
+            
+            if (!isMessageAlreadyInList) {
+                updatedUnreadMessages[roomId].push(newMessage)
+            }
+    
+            return updatedUnreadMessages
+        })
+    }
+    
+
     
     useEffect(() => {
         setPrivateRooms(userFriends)
@@ -49,10 +70,18 @@ export const RoomsProvider = ({ children }) => {
 
     useEffect(() => {
         if (!socket) {
-        console.error('Socket instance is not available in rooms context')
-        return
+            console.error('Socket instance is not available in rooms context')
+            return
         }
 
+        socket.on('new_unread_message', handleIncomingUnreadMessage)
+
+        return () => socket.off('new_unread_message', handleIncomingUnreadMessage)
+        
+    }, [socket])
+
+
+    useEffect(() => {
         // INITIALISATION DES DONNEES
         const setInitialPublicRooms = async () => {
             try {
@@ -77,7 +106,8 @@ export const RoomsProvider = ({ children }) => {
         publicRooms, 
         onPrivateConversationClick, 
         onPublicConversationClick,
-        createPublicRoom
+        createPublicRoom,
+        unreadMessages
     }}>
       {children}
     </RoomContext.Provider>

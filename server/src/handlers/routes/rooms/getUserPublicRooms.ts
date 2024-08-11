@@ -34,7 +34,8 @@ export const getUserPublicRoomsRoute = (app: express.Express) => {
                     where: {
                         user: { id: user.id },
                         room: { id: publicRoom.id }
-                    }
+                    },
+                    relations : ['unreadMessages']
                 })
 
                 return {
