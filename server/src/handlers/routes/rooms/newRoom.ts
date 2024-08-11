@@ -27,13 +27,12 @@ export const newRoomRoute = (app: express.Express) => {
                 return
             }
 
-            const targetUser = await userRepo.findOne({ where: { username: targetUsername } })
-            if (!targetUser) {
-                res.status(400).send({ error: "L'utilisateur cible n'a pas été trouvé." })
-                return
-            }
-
             if (isPrivate) {
+                const targetUser = await userRepo.findOne({ where: { username: targetUsername } })
+                if (!targetUser) {
+                    res.status(400).send({ error: "L'utilisateur cible n'a pas été trouvé." })
+                    return
+                }
                 // on regarde si il n'y a pas déjà une conversation privée entre les deux
                 
                 const existingRooms = await roomRepo.find({ where : { isPrivate : true }, relations : ['users', 'messages'] })
@@ -62,7 +61,7 @@ export const newRoomRoute = (app: express.Express) => {
             room.messages = []
 
 
-            // créer les instances de table de jointure pour les deux utilisateurs
+            // créer les instances de table de jointure pour le créateur du salon
             const linkedUserRoom = userRoomRepo.create({
                 user : creator,
                 room : roomToCreate,
@@ -72,17 +71,6 @@ export const newRoomRoute = (app: express.Express) => {
 
             await userRoomRepo.save(linkedUserRoom)
 
-
-            if (targetUser) {
-                const targetUserRoom = userRoomRepo.create({
-                    user: targetUser,
-                    room: room,
-                    unreadMessagesCount: 0,
-                    lastVisitedAt: new Date()
-                })
-
-                await userRoomRepo.save(targetUserRoom)
-            }
 
             res.status(201).send({
                 message: "La conversation a bien été créée.",
