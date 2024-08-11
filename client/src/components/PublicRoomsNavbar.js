@@ -10,6 +10,7 @@ const { Sider } = Layout
 export const PublicRoomsNavbar = () => {
 
   const { 
+      activeRoom,
       publicRooms, 
       onPublicConversationClick, 
       createPublicRoom 
@@ -61,6 +62,7 @@ export const PublicRoomsNavbar = () => {
             style={{ height: '100vh'}}
               theme='dark'
               items={navBarRooms}
+              selectedKeys={[activeRoom?.id?.toString() || '']}
             />
             <NewPublicRoomFormModal
                 visible={isModalVisible}

@@ -8,7 +8,7 @@ import { useRooms } from '../contexts/roomsContext';
 const { Sider } = Layout
 
 export const Navbar = () => {
-  const { privateRooms, onPrivateConversationClick, unreadMessages } = useRooms()
+  const { activeRoom, privateRooms, onPrivateConversationClick, unreadMessages } = useRooms()
 
   const [rooms, setRooms] = useState(privateRooms)
   const [isFriendsModalVisible, setIsFriendsModalVisible] = useState(false)
@@ -56,6 +56,7 @@ export const Navbar = () => {
             style={{ height: '100vh'}}
               theme='light'
               items={friendsRoomListItems}
+              selectedKeys={[activeRoom?.id?.toString() || '']}
             />
             <FriendsModal visible={isFriendsModalVisible} onCancel={hideFriendsModal}/>
           </Sider>
