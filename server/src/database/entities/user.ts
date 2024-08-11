@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, OneToMany, ManyToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, OneToMany, ManyToMany, ManyToOne } from "typeorm";
 import { Token } from "./token";
 import { Message } from "./message";
 import { Room } from "./room";
@@ -47,6 +47,8 @@ export class User {
   @OneToMany(() => UserRoom, userRoom => userRoom.user)
   userRooms!: UserRoom[]
 
+  @ManyToOne(() => Room, room => room.currentUsers)
+  currentRoom!: Room 
 
   constructor(username: string, email: string, password: string, token : Token, uid: string) {
       this.username = username

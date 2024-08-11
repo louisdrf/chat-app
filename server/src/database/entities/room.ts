@@ -30,6 +30,9 @@ export class Room {
 
     @OneToMany(() => UserRoom, userRoom => userRoom.room)
     userRooms!: UserRoom[]
+    
+    @OneToMany(() => User, user => user.currentRoom)
+    currentUsers!: User[]
 
     constructor(name: string, createdAt: Date, createdBy: User, isPrivate: boolean = false, users : User[]) {
         this.name = name;

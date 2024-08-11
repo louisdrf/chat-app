@@ -11,8 +11,29 @@ export const eventMessageController = (socket: Socket) => {
     const roomRepository = AppDataSource.getRepository(Room)
     const userRoomRepository = AppDataSource.getRepository(UserRoom)
 
-    socket.on('join_room', async (roomId: number) => {
-        socket.join(`room_${roomId}`)
+    socket.on('join_room', async (roomId: number, joinerUsername: string) => {
+        try {
+            const room = await roomRepository.findOneBy({ id: roomId })
+            if (!room) {
+                console.error(`Room ${roomId} non trouvée.`)
+                return
+            }
+
+            const user = await userRepository.findOneBy({ username: joinerUsername })
+            if (!user) {
+                console.error(`Utilisateur non trouvé: ${joinerUsername}.`)
+                return
+            }
+
+            // Met à jour la room actuelle de l'utilisateur
+            user.currentRoom = room
+            await userRepository.save(user)
+
+            socket.join(`room_${roomId}`)
+
+        } catch (error) {
+            console.error('Erreur lors de la jonction de la room:', error)
+        }
     })
 
     socket.on('send_message', async (data: { content: string; senderUsername: string, roomId : number}) => {
