@@ -3,18 +3,20 @@ import { AppDataSource } from '../../database/database';
 import { Message } from '../../database/entities/message';
 import { User } from '../../database/entities/user';
 import { Room } from '../../database/entities/room';
+import { UserRoom } from '../../database/entities/userRoom';
 
 export const eventMessageController = (socket: Socket) => {
     const messageRepository = AppDataSource.getRepository(Message)
     const userRepository = AppDataSource.getRepository(User)
     const roomRepository = AppDataSource.getRepository(Room)
+    const userRoomRepository = AppDataSource.getRepository(UserRoom)
 
     socket.on('join_room', async (roomId: number) => {
         socket.join(`room_${roomId}`)
     })
 
     socket.on('send_message', async (data: { content: string; senderUsername: string, roomId : number}) => {
-        try {
+        try {            
             const { content, senderUsername, roomId } = data
 
             const sender = await userRepository.findOneBy({ username : senderUsername})
@@ -31,8 +33,23 @@ export const eventMessageController = (socket: Socket) => {
 
             // Créer un nouveau message
             const message = new Message(content, new Date(), sender, room)
-
             await messageRepository.save(message)
+
+            // Incrémenter le nombre de messages non lus
+            if (room.isPrivate) {
+                // Pour une room privée, on incrémente le compteur pour l'autre utilisateur
+                const otherUser = room.users.find(user => user.id !== sender.id)
+                if (otherUser) {
+                    await userRoomRepository.increment({ user: otherUser, room }, 'unreadMessagesCount', 1)
+                }
+            } else {
+                // Pour une room publique, on incrémente le compteur pour tous les utilisateurs sauf le sender
+                for (const user of room.users) {
+                    if (user.id !== sender.id) {
+                        await userRoomRepository.increment({ user, room }, 'unreadMessagesCount', 1)
+                    }
+                }
+            }
 
             socket.in(`room_${roomId}`).emit('receive_message', message)
             socket.emit('receive_message', message)
