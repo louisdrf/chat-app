@@ -16,6 +16,19 @@ export const RoomsProvider = ({ children }) => {
   const [unreadMessages, setUnreadMessages] = useState([])
 
   // FONCTIONS UTILITAIRES
+
+    const createPrivateRoom = async (friend) => {
+        try {
+        const room = await createRoom(friend.username, true)
+        room.user = friend
+        return room
+        } catch (error) {
+        console.error(`Erreur lors de la création de la room privée pour ${friend.username} :`, error);
+        return null
+        }
+    }
+
+
     const onPrivateConversationClick = async (roomName) => {
         try {
             const room = await createRoom(roomName, true)
@@ -64,8 +77,19 @@ export const RoomsProvider = ({ children }) => {
 
     
     useEffect(() => {
-        setPrivateRooms(userFriends)
-    }, [userFriends])
+        // Création ou mise à jour des rooms privées lorsque userFriends change
+        const updatePrivateRooms = async () => {
+          try {
+            const updatedRoomsPromises = userFriends.map(friend => createPrivateRoom(friend))
+            const updatedRooms = await Promise.all(updatedRoomsPromises)
+            setPrivateRooms(updatedRooms.filter(room => room !== null))
+          } catch (error) {
+            console.error('Erreur lors de la mise à jour des rooms privées :', error)
+          }
+        }
+    
+        updatePrivateRooms()
+      }, [userFriends])
 
 
     useEffect(() => {
@@ -94,7 +118,23 @@ export const RoomsProvider = ({ children }) => {
             }
         }
 
+
+        const setInitialPrivateRooms = async () => {
+            try {
+                const userPrivateRooms = userFriends.map( async(friend) => {
+                    const linkedRoom = await createRoom(friend.username, true)
+                    return linkedRoom
+                })
+                console.log('init private rooms')
+                
+                setPrivateRooms(userPrivateRooms)
+            } catch (error) {
+                console.error('Failed to fetch initial user private rooms', error)
+            }
+        }
+
         setInitialPublicRooms()
+        setInitialPrivateRooms()
 
     }, [])
 

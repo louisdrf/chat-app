@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Menu, Layout } from 'antd';
+import { Menu, Layout, Badge } from 'antd';
 import { UserAvatar } from './UserAvatar'
 import { TeamOutlined } from '@ant-design/icons'
 import { FriendsModal } from './friends/FriendsModal';
@@ -8,7 +8,7 @@ import { useRooms } from '../contexts/roomsContext';
 const { Sider } = Layout
 
 export const Navbar = () => {
-  const { privateRooms, onPrivateConversationClick } = useRooms()
+  const { privateRooms, onPrivateConversationClick, unreadMessages } = useRooms()
 
   const [rooms, setRooms] = useState(privateRooms)
   const [isFriendsModalVisible, setIsFriendsModalVisible] = useState(false)
@@ -28,14 +28,26 @@ export const Navbar = () => {
       label: 'Amis',
       onClick: () => showFriendsModal()
     },
-    ...rooms.map(user => ({
-      key: user.id.toString(),
-      icon: <UserAvatar user={user} size={24} />, 
-      label: (
-        <span style={{ marginLeft: 10 }}>{user.username}</span>
-      ),
-      onClick: () => onPrivateConversationClick(user.username)
-    }))
+    ...rooms.map((room) => {
+      // Nombre de messages non lus pour cette room
+      console.log('messages non lus : ', unreadMessages);
+      
+      const unreadCount = unreadMessages[room.id] ? unreadMessages[room.id].length : 0
+
+      return {
+        key: room.id.toString(),
+        icon: <UserAvatar user={room.user} size={24} />,
+        label: (
+          <span style={{ marginLeft: 10 }}>
+            {room.user.username}
+            {unreadCount > 0 && (
+              <Badge title='messages non lus' color='geekblue' size='small' count={unreadCount} style={{ marginLeft: 8 }} />
+            )}
+          </span>
+        ),
+        onClick: () => onPrivateConversationClick(room.user.username),
+      }
+    })
   ]
 
   return (

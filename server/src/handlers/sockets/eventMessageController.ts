@@ -51,37 +51,39 @@ export const eventMessageController = (socket: Socket) => {
         }
     })
 
-    socket.on('send_message', async (data: { content: string; senderUsername: string; roomId: number }) => {
+    socket.on('send_message', async (data: { content: string; senderUsername: string }) => {
         try {
-            const { content, senderUsername, roomId } = data
+            const { content, senderUsername } = data
     
             // Trouver l'expéditeur
-            const sender = await userRepository.findOneBy({ username: senderUsername })
+            const sender = await userRepository.findOne( { where : { username: senderUsername }, relations: ['currentRoom', 'currentRoom.users'] } )
             if (!sender) {
                 console.error(`Utilisateur ${senderUsername} non trouvé.`)
                 return
             }
-    
-            // Trouver la room
-            const room = await roomRepository.findOneBy({ id: roomId })
-            if (!room) {
-                console.error(`Room ${roomId} non trouvée.`)
+
+            const curretUserRoom : Room = sender.currentRoom    
+            if (!curretUserRoom) {
+                console.error(`L'utilisateur n'est actuellement dans aucune room.`)
                 return
             }
+
+            const roomId = curretUserRoom.id
+
     
             // Créer et sauvegarder un nouveau message
-            const message = new Message(content, new Date(), sender, room)
+            const message = new Message(content, new Date(), sender, curretUserRoom)
             await messageRepository.save(message)
     
             // Ajouter le message aux messages non lus pour les utilisateurs concernés
-            if (room.isPrivate) {
+            if (curretUserRoom.isPrivate) {
                 // Pour une room privée, on ajoute le message à la liste des non lus pour l'autre utilisateur
-                const otherUser = room.users.find(user => user.id !== sender.id)
-                if (otherUser && otherUser.socketId && otherUser.currentRoom?.id !== roomId) {
+                const otherUser = curretUserRoom.users.find(user => user.id !== sender.id)
+                if (otherUser && otherUser.socketId && otherUser.currentRoom?.id !== curretUserRoom.id) {
                     const userRoom = await userRoomRepository.findOne({
                         where: {
                             user: { id: otherUser.id },
-                            room: { id: roomId },
+                            room: { id: curretUserRoom.id },
                         },
                         relations: ['unreadMessages']
                     })
@@ -96,7 +98,7 @@ export const eventMessageController = (socket: Socket) => {
                 }
             } else {
                 // Pour une room publique, on ajoute le message à la liste des non lus pour tous les utilisateurs sauf l'expéditeur
-                for (const user of room.users) {
+                for (const user of curretUserRoom.users) {
                     if (user.id !== sender.id && user.socketId && user.currentRoom?.id !== roomId) {
                         const userRoom = await userRoomRepository.findOne({
                             where: {

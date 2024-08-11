@@ -31,8 +31,8 @@ export const Home = () => {
                                         {activeRoom ? (
                                             <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                                                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                                                    <ConversationComponent room={activeRoom} />
-                                                    <InputMessageComponent room={activeRoom} />
+                                                    <ConversationComponent />
+                                                    <InputMessageComponent />
                                                 </div>
                                             </div>
                                         ) : (

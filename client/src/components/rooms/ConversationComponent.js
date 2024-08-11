@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useSocket } from '../../contexts/socketContext'; 
 import { MessageRowComponent } from './messages/MessageRowComponent';
+import { useRooms } from '../../contexts/roomsContext';
 
-export const ConversationComponent = ({ room }) => {
-  const {socket} = useSocket()
+export const ConversationComponent = () => {
+  const { socket } = useSocket()
+  const { activeRoom } = useRooms()
+
+  const [room, setRoom] = useState(activeRoom)
   const [messages, setMessages] = useState(room.messages)
 
   useEffect(() => {
@@ -13,7 +17,12 @@ export const ConversationComponent = ({ room }) => {
 
     socket.emit('join_room', room.id, currentUsername)
 
-    const handleReceiveMessage = (message) => setMessages(prevMessages => [...prevMessages, message])
+    const handleReceiveMessage = (message) => {
+        if (message.room.id === room.id) {
+            setMessages(prevMessages => [...prevMessages, message])
+        }
+    }
+
     const handleDeleteMessage = (messageId) => setMessages(prevMessages => prevMessages.filter(message => message.id !== messageId))
     
     const handleModifyMessage = (modifiedMessage) => {
@@ -35,8 +44,9 @@ export const ConversationComponent = ({ room }) => {
 
 
   useEffect(() => {
-    setMessages(room.messages)
-  }, [room])
+    setRoom(activeRoom)
+    setMessages(activeRoom.messages)
+  }, [activeRoom])
 
   return (
     <div className="conversation-container">

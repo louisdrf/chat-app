@@ -5,17 +5,16 @@ import { useSocket } from '../../contexts/socketContext';
 
 const { TextArea } = Input
 
-export const InputMessageComponent = ({ room }) => {
+export const InputMessageComponent = () => {
+  const { socket } = useSocket()
   const [message, setMessage] = useState('')
-  const {socket} = useSocket()
 
   const handleSendMessage = () => {
     if (message.trim()) {
       socket.emit('send_message', { 
         content: message, 
-        senderUsername: localStorage.getItem('username'),
-        roomId: room.id
-      });
+        senderUsername: localStorage.getItem('username')
+      })
       setMessage('')
     }
   }
@@ -40,5 +39,5 @@ export const InputMessageComponent = ({ room }) => {
         autoSize={{ minRows: 2, maxRows: 7 }} 
       />
     </div>
-  );
-};
+  )
+}
